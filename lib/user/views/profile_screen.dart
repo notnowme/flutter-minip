@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
+import 'package:minip/common/providers/secure_storage.dart';
+import 'package:minip/user/views/login_screen.dart';
 import 'package:minip/user/widgets/profile_board_info.dart';
 import 'package:minip/user/widgets/profile_user_info.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
+  static const String routeName = 'profile';
+  static const String routePath = '/profile';
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return DefaultLayout(
       title: '프로필',
       child: Padding(
@@ -39,7 +46,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(
                   height: 16,
                 ),
-                _renderLogoutButton(),
+                _renderLogoutButton(ref, context),
               ],
             ),
             _renderWithdrawButton(),
@@ -49,11 +56,17 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _renderLogoutButton() {
+  Widget _renderLogoutButton(WidgetRef ref, BuildContext context) {
+    final storage = ref.read(secureStorageProvider);
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () async {
+          await storage.deleteAll();
+          if (context.mounted) {
+            context.goNamed(LoginScreen.routeName);
+          }
+        },
         style: ElevatedButton.styleFrom(
             elevation: 0,
             backgroundColor: inputBgColor,

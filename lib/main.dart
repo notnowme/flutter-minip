@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:minip/common/layouts/default_layout.dart';
-import 'package:minip/free/write/views/free_write_screen.dart';
-import 'package:minip/user/views/join_screen.dart';
-import 'package:minip/user/views/login_screen.dart';
-import 'package:minip/user/views/profile_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:minip/common/routes/router.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: _MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class _MyApp extends ConsumerWidget {
+  const _MyApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      routerConfig: ref.watch(routesProvider),
       theme: ThemeData(
         fontFamily: 'Pretendard',
       ),
+      title: 'CRUD',
       debugShowCheckedModeBanner: false,
-      home: const FreeWriteScreen(),
     );
   }
 }

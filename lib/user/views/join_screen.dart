@@ -1,19 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/hooks/validation.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/widgets/custom_text_formField.dart';
+import 'package:minip/common/widgets/toast.dart';
+import 'package:minip/user/models/join_data_model.dart';
+import 'package:minip/user/provider/join_provider.dart';
+import 'package:minip/user/views/login_screen.dart';
 
-class JoinScreen extends StatefulWidget {
+class JoinScreen extends ConsumerStatefulWidget {
   const JoinScreen({super.key});
 
+  static const String routeName = 'join';
+  static const String routePath = '/join';
+
   @override
-  State<JoinScreen> createState() => _JoinScreenState();
+  ConsumerState<JoinScreen> createState() => _JoinScreenState();
 }
 
-class _JoinScreenState extends State<JoinScreen> {
+class _JoinScreenState extends ConsumerState<JoinScreen> {
   String id = '', nick = '', password = '', passwordCheck = '';
+
+  bool isIdValid = false,
+      isNickValid = false,
+      isPwValid = false,
+      isPwChkValid = false;
+
+  bool idChecked = false, nickChecked = false;
+
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
@@ -58,6 +74,30 @@ class _JoinScreenState extends State<JoinScreen> {
   }
 
   Widget _renderIdTextField() {
+    void checkId() async {
+      final result = await ref.read(joinAsyncProvider.notifier).checkId(id);
+      if (result['ok']) {
+        if (mounted) {
+          ToastMessage.showToast(context, 'success', '가입할 수 있는 아이디예요');
+        }
+        setState(() {
+          idChecked = true;
+        });
+      } else {
+        final code = result['statusCode'];
+        setState(() {
+          idChecked = false;
+        });
+        switch (code) {
+          case 409:
+            if (mounted) {
+              ToastMessage.showToast(context, 'error', '이미 있는 아이디예요');
+            }
+            break;
+        }
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -86,6 +126,14 @@ class _JoinScreenState extends State<JoinScreen> {
                   },
                   onChanged: (String value) {
                     id = value;
+                    if (Validation.validateId(value) == null) {
+                      isIdValid = true;
+                    } else {
+                      isIdValid = false;
+                    }
+                    setState(() {
+                      idChecked = false;
+                    });
                   },
                 ),
               ),
@@ -93,9 +141,13 @@ class _JoinScreenState extends State<JoinScreen> {
                 width: 10,
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  if (!isIdValid) return;
+                  checkId();
+                },
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
+                  backgroundColor: isIdValid ? primaryColor : thirdColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -103,12 +155,12 @@ class _JoinScreenState extends State<JoinScreen> {
                     color: inputBorderColodr,
                   ),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     '확인',
                     style: TextStyle(
-                      color: secondaryColor,
+                      color: isIdValid ? Colors.white : secondaryColor,
                       fontSize: 16,
                     ),
                   ),
@@ -122,6 +174,30 @@ class _JoinScreenState extends State<JoinScreen> {
   }
 
   Widget _renderNickTextField() {
+    void checkNick() async {
+      final result = await ref.read(joinAsyncProvider.notifier).checkNick(nick);
+      if (result['ok']) {
+        if (mounted) {
+          ToastMessage.showToast(context, 'success', '가입할 수 있는 닉네임이에요');
+        }
+        setState(() {
+          nickChecked = true;
+        });
+      } else {
+        final code = result['statusCode'];
+        setState(() {
+          nickChecked = false;
+        });
+        switch (code) {
+          case 409:
+            if (mounted) {
+              ToastMessage.showToast(context, 'error', '이미 있는 닉네임이에요');
+            }
+            break;
+        }
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -150,6 +226,14 @@ class _JoinScreenState extends State<JoinScreen> {
                   },
                   onChanged: (String value) {
                     nick = value;
+                    if (Validation.validateNick(value) == null) {
+                      isNickValid = true;
+                    } else {
+                      isNickValid = false;
+                    }
+                    setState(() {
+                      nickChecked = false;
+                    });
                   },
                 ),
               ),
@@ -157,9 +241,13 @@ class _JoinScreenState extends State<JoinScreen> {
                 width: 10,
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  if (!isNickValid) return;
+                  checkNick();
+                },
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
+                  backgroundColor: isNickValid ? primaryColor : thirdColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -167,12 +255,12 @@ class _JoinScreenState extends State<JoinScreen> {
                     color: inputBorderColodr,
                   ),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     '확인',
                     style: TextStyle(
-                      color: secondaryColor,
+                      color: isNickValid ? Colors.white : secondaryColor,
                       fontSize: 16,
                     ),
                   ),
@@ -208,6 +296,12 @@ class _JoinScreenState extends State<JoinScreen> {
           },
           onChanged: (String value) {
             password = value;
+            if (Validation.validatePassword(value) == null) {
+              isPwValid = true;
+            } else {
+              isPwValid = false;
+            }
+            setState(() {});
           },
         )
       ],
@@ -237,6 +331,12 @@ class _JoinScreenState extends State<JoinScreen> {
           },
           onChanged: (String value) {
             passwordCheck = value;
+            if (Validation.validatePasswordCheck(password, value) == null) {
+              isPwChkValid = true;
+            } else {
+              isPwChkValid = false;
+            }
+            setState(() {});
           },
         )
       ],
@@ -244,25 +344,48 @@ class _JoinScreenState extends State<JoinScreen> {
   }
 
   Widget _renderButton() {
+    bool isAllValid = idChecked && nickChecked && isPwValid && isPwChkValid;
+
+    void signUp() async {
+      JoinDataModel user = JoinDataModel(
+        id: id,
+        nick: nick,
+        password: password,
+      );
+      final result = await ref.read(joinAsyncProvider.notifier).join(user);
+      if (result['ok']) {
+        if (mounted) {
+          ToastMessage.showToast(context, 'success', '가입에 성공했어요');
+          context.goNamed(LoginScreen.routeName);
+        }
+      } else {
+        final code = result['statusCode'];
+        print(code);
+      }
+    }
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () async {
+          if (!isAllValid) return;
+          signUp();
+        },
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          backgroundColor: thirdColor,
+          backgroundColor: isAllValid ? primaryColor : thirdColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
           ),
         ),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
             vertical: 10,
           ),
           child: Text(
             '회원 가입',
             style: TextStyle(
-              color: secondaryColor,
+              color: isAllValid ? Colors.white : secondaryColor,
               fontSize: 18,
             ),
           ),

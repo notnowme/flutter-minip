@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
+import 'package:minip/common/const/data.dart';
 import 'package:minip/common/hooks/validation.dart';
 import 'package:minip/common/layouts/default_layout.dart';
+import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/common/widgets/custom_text_formField.dart';
+import 'package:minip/common/widgets/toast.dart';
+import 'package:minip/home/views/home_screen.dart';
+import 'package:minip/user/models/login_req_model.dart';
+import 'package:minip/user/models/login_res_model.dart';
+import 'package:minip/user/provider/login_provider.dart';
+import 'package:minip/user/views/join_screen.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
+  static const String routeName = 'login';
+  static const String routePath = '/login';
+
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   String id = '';
   String password = '';
 
@@ -135,12 +148,51 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _renderButton() {
+    void login() async {
+      LoginReqModel user = LoginReqModel(id: id, password: password);
+      final result = await ref.read(loginAsyncProvider.notifier).login(user);
+      if (result is LoginResModel) {
+        final storage = ref.read(secureStorageProvider);
+
+        Future.wait([
+          storage.write(key: STORAGE_USER_NO, value: result.data.no.toString()),
+          storage.write(key: STORAGE_ID, value: result.data.id),
+          storage.write(key: STORAGE_NICK, value: result.data.nick),
+          storage.write(key: ACCESS_KEY, value: result.data.token),
+        ]);
+
+        // 이전 페이지 기억해서 보내야 될 듯.
+        if (mounted) {
+          context.goNamed(HomeScreen.routeName);
+        }
+      } else {
+        final code = result['statusCode'];
+        switch (code) {
+          case 401:
+            if (mounted) {
+              ToastMessage.showToast(context, 'error', '비밀번호가 틀렸어요');
+            }
+            break;
+          case 404:
+            if (mounted) {
+              ToastMessage.showToast(context, 'error', '아이디를 확인해 주세요');
+            }
+            break;
+          case 500:
+            if (mounted) {
+              ToastMessage.showToast(context, 'error', '서버 오류예요');
+            }
+            break;
+        }
+      }
+    }
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
           if (!isValidated) return;
-          debugPrint(id);
+          login();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: isValidated ? primaryColor : thirdColor,
@@ -179,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         GestureDetector(
           onTap: () {
-            debugPrint('텍스트 탭');
+            context.pushNamed(JoinScreen.routeName);
           },
           child: const Text(
             '가입하기',
