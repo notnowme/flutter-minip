@@ -4,15 +4,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minip/user/models/auth_model.dart';
 import 'package:minip/user/models/join_data_model.dart';
-import 'package:minip/user/repository/user_repository.dart';
+import 'package:minip/user/repository/auth_repository.dart';
 
 class JoinAsyncNotifier extends AsyncNotifier<AuthModel> {
-  late final UserRepository repo;
+  late final AuthRepository repo;
   late AuthModel resultData;
 
   @override
   FutureOr<AuthModel> build() {
-    repo = ref.watch(userRepositoryProvider);
+    repo = ref.watch(authRepositoryProvider);
     return AuthModel(ok: false, message: '');
   }
 

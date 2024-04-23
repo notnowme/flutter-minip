@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:minip/common/const/data.dart';
 import 'package:minip/common/providers/secure_storage.dart';
 
 final dioProvider = Provider<Dio>((ref) {
@@ -20,8 +21,18 @@ class CustomInterceptor extends Interceptor {
   CustomInterceptor({required this.storage});
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+  void onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
     debugPrint('Dio Request 실행');
+
+    if (options.headers['accessToken'] == 'true') {
+      options.headers.remove('accessToken');
+
+      final token = await storage.read(key: ACCESS_KEY);
+
+      options.headers.addAll({'Authorization': token});
+    }
+
     return super.onRequest(options, handler);
   }
 

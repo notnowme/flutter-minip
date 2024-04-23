@@ -4,15 +4,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minip/user/models/login_req_model.dart';
 import 'package:minip/user/models/login_res_model.dart';
-import 'package:minip/user/repository/user_repository.dart';
+import 'package:minip/user/repository/auth_repository.dart';
 
 class LoginAsyncNotifier extends AsyncNotifier<LoginResModel> {
-  late final UserRepository repo;
+  late final AuthRepository repo;
   late LoginResModel resultData;
 
   @override
   FutureOr<LoginResModel> build() {
-    repo = ref.watch(userRepositoryProvider);
+    repo = ref.watch(authRepositoryProvider);
     return LoginResModel(
       ok: false,
       data: LoginDataModel(

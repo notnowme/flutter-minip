@@ -30,6 +30,8 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
 
   bool idChecked = false, nickChecked = false;
 
+  FocusNode idFocus = FocusNode(), nickFocus = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
@@ -92,6 +94,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
           case 409:
             if (mounted) {
               ToastMessage.showToast(context, 'error', '이미 있는 아이디예요');
+              idFocus.requestFocus();
             }
             break;
         }
@@ -120,6 +123,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
               Flexible(
                 flex: 1,
                 child: CustomTextFormField(
+                  focusNode: idFocus,
                   hintText: '아이디를 입력해 주세요',
                   validator: (value) {
                     return Validation.validateId(value);
@@ -192,6 +196,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
           case 409:
             if (mounted) {
               ToastMessage.showToast(context, 'error', '이미 있는 닉네임이에요');
+              nickFocus.requestFocus();
             }
             break;
         }
@@ -220,6 +225,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
               Flexible(
                 flex: 1,
                 child: CustomTextFormField(
+                  focusNode: nickFocus,
                   hintText: '닉네임을 입력해 주세요',
                   validator: (value) {
                     return Validation.validateNick(value);

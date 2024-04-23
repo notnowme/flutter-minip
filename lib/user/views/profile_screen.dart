@@ -4,55 +4,91 @@ import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
+import 'package:minip/user/models/user_model.dart';
+import 'package:minip/user/provider/user_data_provider.dart';
 import 'package:minip/user/views/login_screen.dart';
 import 'package:minip/user/widgets/profile_board_info.dart';
 import 'package:minip/user/widgets/profile_user_info.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   static const String routeName = 'profile';
   static const String routePath = '/profile';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return DefaultLayout(
-      title: '프로필',
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              children: [
-                const SizedBox(
-                  height: 40,
-                ),
-                const UserInfoWidget(),
-                const SizedBox(
-                  height: 20,
-                ),
-                const BoardInfoWidget(
-                  boardName: '자유 게시판',
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const BoardInfoWidget(
-                  boardName: '질문 게시판',
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                _renderLogoutButton(ref, context),
-              ],
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  @override
+  void dispose() {
+    debugPrint('profile page dispose');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ref.watch(userDataAsyncNotifier).when(
+      data: (data) {
+        if (data == null) {
+          return const Center(
+            child: Text('error'),
+          );
+        } else {
+          return DefaultLayout(
+            title: '프로필',
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      UserInfoWidget(
+                        id: data.id,
+                        nick: data.nick,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const BoardInfoWidget(
+                        boardName: '자유 게시판',
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const BoardInfoWidget(
+                        boardName: '질문 게시판',
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      _renderLogoutButton(ref, context),
+                    ],
+                  ),
+                  _renderWithdrawButton(),
+                ],
+              ),
             ),
-            _renderWithdrawButton(),
-          ],
-        ),
-      ),
+          );
+        }
+      },
+      error: (error, stackTrace) {
+        return const Center(
+          child: Text('error!'),
+        );
+      },
+      loading: () {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 

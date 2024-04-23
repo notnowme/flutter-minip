@@ -13,13 +13,6 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final storage = ref.read(secureStorageProvider);
-    void test() async {
-      final data = await storage.readAll();
-      print(data);
-    }
-
-    test();
     return DefaultLayout(
       title: '홈',
       child: Center(

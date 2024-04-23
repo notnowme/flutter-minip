@@ -17,14 +17,44 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen>
+    with WidgetsBindingObserver {
   bool isLogin = false;
+
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
-
+    print('init');
     checkLogin();
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   switch (state) {
+  //     case AppLifecycleState.resumed:
+  //       initState();
+  //       print('bb');
+  //       break;
+  //     case AppLifecycleState.inactive:
+  //       print('cc');
+  //       break;
+  //     case AppLifecycleState.hidden:
+  //       print('dd');
+  //     case AppLifecycleState.paused:
+  //       print('hihi');
+  //       break;
+  //     case AppLifecycleState.detached:
+  //       print('aa');
+  //       break;
+  //   }
+  // }
 
   void checkLogin() async {
     final storage = ref.read(secureStorageProvider);
@@ -36,10 +66,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       if (mounted) {
         isLogin = false;
       }
-    }
-    // 로그인 된 상태
-    if (mounted) {
-      isLogin = true;
+    } else {
+      // 로그인 된 상태
+      if (mounted) {
+        isLogin = true;
+      }
     }
     setState(() {});
   }

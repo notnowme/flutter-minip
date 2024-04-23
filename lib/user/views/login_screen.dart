@@ -31,6 +31,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool isValidated = false;
 
+  TextEditingController passwordController = TextEditingController();
+
+  FocusNode idFocus = FocusNode(), pwFocus = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
@@ -106,6 +110,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           height: 4,
         ),
         CustomTextFormField(
+          focusNode: idFocus,
           hintText: '아이디를 입력해 주세요',
           validator: (value) {
             return Validation.validateId(value);
@@ -134,6 +139,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           height: 4,
         ),
         CustomTextFormField(
+          controller: passwordController,
+          focusNode: pwFocus,
           isPassword: true,
           hintText: '비밀번호를 입력해 주세요',
           validator: (value) {
@@ -163,6 +170,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         // 이전 페이지 기억해서 보내야 될 듯.
         if (mounted) {
+          ToastMessage.showToast(context, 'success', '로그인 성공했어요');
           context.goNamed(HomeScreen.routeName);
         }
       } else {
@@ -171,11 +179,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           case 401:
             if (mounted) {
               ToastMessage.showToast(context, 'error', '비밀번호가 틀렸어요');
+              passwordController.clear();
+              pwFocus.requestFocus();
             }
             break;
           case 404:
             if (mounted) {
               ToastMessage.showToast(context, 'error', '아이디를 확인해 주세요');
+              idFocus.requestFocus();
             }
             break;
           case 500:
