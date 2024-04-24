@@ -75,7 +75,7 @@ class _FreeRepository implements FreeRepository {
   }
 
   @override
-  Future<FreeWriteModel> modify({
+  Future<FreeModifyModel> modify({
     required Map<String, dynamic> data,
     required String no,
   }) async {
@@ -86,7 +86,7 @@ class _FreeRepository implements FreeRepository {
     final _data = <String, dynamic>{};
     _data.addAll(data);
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<FreeWriteModel>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<FreeModifyModel>(Options(
       method: 'PUT',
       headers: _headers,
       extra: _extra,
@@ -102,7 +102,7 @@ class _FreeRepository implements FreeRepository {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = FreeWriteModel.fromJson(_result.data!);
+    final value = FreeModifyModel.fromJson(_result.data!);
     return value;
   }
 

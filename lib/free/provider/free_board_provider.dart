@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:minip/free/models/free_modify_model.dart';
+import 'package:minip/free/models/free_one_model.dart';
 import 'package:minip/free/models/free_write_model.dart';
 import 'package:minip/free/repository/free_repository.dart';
 
 class FreeBoardAsyncNotifier extends AsyncNotifier<void> {
   late final FreeRepository repo;
   late FreeWriteModel resultData;
+  late FreeModifyModel resultModifyData;
 
   @override
   FutureOr<void> build() {
@@ -44,7 +47,7 @@ class FreeBoardAsyncNotifier extends AsyncNotifier<void> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      resultData = await repo.modify(data: data, no: no);
+      resultModifyData = await repo.modify(data: data, no: no);
     });
 
     if (state.hasError) {
@@ -54,7 +57,7 @@ class FreeBoardAsyncNotifier extends AsyncNotifier<void> {
         'statusCode': error.response?.statusCode,
       };
     }
-    return resultData;
+    return resultModifyData;
   }
 }
 

@@ -6,10 +6,12 @@ import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/common/widgets/toast.dart';
+import 'package:minip/free/models/free_modify_model.dart';
 import 'package:minip/free/models/free_one_model.dart';
 import 'package:minip/free/models/free_write_model.dart';
 import 'package:minip/free/provider/free_board_provider.dart';
 import 'package:minip/free/provider/free_list_provider.dart';
+import 'package:minip/free/provider/free_one_provider.dart';
 import 'package:minip/free/views/free_read_screen.dart';
 import 'package:minip/user/views/login_screen.dart';
 
@@ -42,6 +44,8 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
   final TextEditingController titleController = TextEditingController(),
       contentController = TextEditingController();
 
+  bool isModified = false;
+
   @override
   void initState() {
     super.initState();
@@ -55,8 +59,8 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
     final prevContent = widget.extra as FreeOneDataModel;
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
-        _showDialog(context);
+      onPopInvoked: (didPop) async {
+        if (!isModified) _showBackDialog(context);
       },
       child: DefaultLayout(
         title: '글 수정',
@@ -65,7 +69,7 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () async {
-                modify(prevContent.no.toString());
+                await modify(prevContent.no.toString());
               },
               child: const Icon(
                 Icons.edit_document,
@@ -100,7 +104,7 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
     );
   }
 
-  void modify(String no) async {
+  Future<void> modify(String no) async {
     final title = titleController.text;
     final content = contentController.text;
     if (title.length < 4) {
@@ -116,11 +120,13 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
     final result = await ref
         .read(freeBoardAsyncProvider.notifier)
         .modify(title, content, no);
-    if (result is FreeWriteModel) {
+    if (result is FreeModifyModel) {
       if (mounted) {
+        isModified = true;
         ToastMessage.showToast(context, 'success', '글을 수정했어요');
         ref.refresh(freeListAsyncProvider('1'));
-        context.pushReplacementNamed(FreeReadScreen.routeName, pathParameters: {
+        ref.refresh(freeOneDisposeAsyncProvider(result.data.no.toString()));
+        context.goNamed(FreeReadScreen.routeName, pathParameters: {
           'no': result.data.no.toString(),
         });
       }
@@ -139,7 +145,7 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
     }
   }
 
-  void _showDialog(BuildContext context) {
+  void _showBackDialog(BuildContext context) {
     showDialog(
       useRootNavigator: false,
       context: context,

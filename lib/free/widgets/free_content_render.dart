@@ -74,7 +74,8 @@ class RenderBoardContent extends StatelessWidget {
                       InkWell(
                         borderRadius: BorderRadius.circular(50),
                         onTap: () {
-                          debugPrint('aa');
+                          // 게시글 삭제
+                          _showDeleteDialog(context);
                         },
                         child: const Icon(
                           Icons.delete_rounded,
@@ -139,6 +140,55 @@ class RenderBoardContent extends StatelessWidget {
         ),
         FreeCommentsList(comments: content.comments),
       ],
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context) {
+    showDialog(
+      useRootNavigator: false,
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          backgroundColor: Colors.white.withOpacity(0.9),
+          surfaceTintColor: Colors.white.withOpacity(0.9),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          contentPadding: const EdgeInsets.all(15),
+          content: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 1,
+                color: inputBorderColodr,
+              ),
+            ),
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '게시글 삭제',
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  '정말 삭제할까요?',
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

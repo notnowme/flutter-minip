@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minip/common/const/data.dart';
 import 'package:minip/common/providers/dio.dart';
 import 'package:minip/free/models/free_list_model.dart';
+import 'package:minip/free/models/free_modify_model.dart';
 import 'package:minip/free/models/free_one_model.dart';
 import 'package:minip/free/models/free_write_model.dart';
 import 'package:retrofit/http.dart';
@@ -34,7 +35,7 @@ abstract class FreeRepository {
   // 게시글 수정
   @PUT('/{no}')
   @Headers({'accessToken': 'true'})
-  Future<FreeWriteModel> modify({
+  Future<FreeModifyModel> modify({
     @Body() required Map<String, dynamic> data,
     @Path() required String no,
   });
