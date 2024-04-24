@@ -39,6 +39,7 @@ class CustomInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     debugPrint('Dio Response 받음');
+
     return super.onResponse(response, handler);
   }
 

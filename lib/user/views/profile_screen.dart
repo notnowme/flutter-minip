@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
-import 'package:minip/user/models/user_model.dart';
 import 'package:minip/user/provider/user_data_provider.dart';
 import 'package:minip/user/views/login_screen.dart';
 import 'package:minip/user/widgets/profile_board_info.dart';
@@ -93,15 +92,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _renderLogoutButton(WidgetRef ref, BuildContext context) {
-    final storage = ref.read(secureStorageProvider);
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () async {
-          await storage.deleteAll();
-          if (context.mounted) {
-            context.goNamed(LoginScreen.routeName);
-          }
+          _showDialog();
         },
         style: ElevatedButton.styleFrom(
             elevation: 0,
@@ -120,6 +115,87 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showDialog() {
+    showDialog(
+      // 외부 탭 방지
+      barrierDismissible: false,
+      useRootNavigator: true,
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          backgroundColor: Colors.white.withOpacity(0.9),
+          surfaceTintColor: Colors.white.withOpacity(0.9),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          contentPadding: const EdgeInsets.all(20),
+          content: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 1,
+                color: inputBorderColodr,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  '로그아웃할까요?',
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(
+                  height: 22,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        context.pop();
+                      },
+                      child: const Text(
+                        '취소',
+                        style: TextStyle(
+                          color: secondaryColor,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 40,
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        final storage = ref.read(secureStorageProvider);
+                        await storage.deleteAll();
+                        if (mounted) {
+                          context.pop();
+                          context.goNamed(LoginScreen.routeName);
+                        }
+                      },
+                      child: const Text(
+                        '로그아웃',
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

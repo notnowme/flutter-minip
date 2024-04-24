@@ -5,7 +5,8 @@ import 'package:minip/common/layouts/default_layout.dart';
 
 const Map<int, String> navIndexEndPointMapper = {
   0: '/',
-  1: '/profile',
+  1: '/free',
+  2: '/profile',
 };
 
 class ScaffoldWithNav extends StatefulWidget {
@@ -64,6 +65,12 @@ class _ScaffoldWithNavState extends State<ScaffoldWithNav> {
               Icons.home_rounded,
             ),
             label: '홈',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.article_rounded,
+            ),
+            label: '자유',
           ),
           BottomNavigationBarItem(
             icon: Icon(
