@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/views/scaffldWithNav.dart';
 import 'package:minip/common/views/splash_screen.dart';
+import 'package:minip/free/views/free_cmt_modify.dart';
+import 'package:minip/free/views/free_cmt_write.dart';
 import 'package:minip/free/views/free_index.dart';
 import 'package:minip/free/views/free_modify_screen.dart';
 import 'package:minip/free/views/free_read_screen.dart';
@@ -127,6 +129,30 @@ StatefulShellBranch _freeBoardBranch() {
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 child: FreeModifyScreen(
+                  no: state.pathParameters['no']!,
+                  extra: state.extra,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: FreeCommentWriteScreen.routePath,
+            name: FreeCommentWriteScreen.routeName,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: FreeCommentWriteScreen(
+                  no: state.pathParameters['no']!,
+                  extra: state.extra,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: FreeCommentModifyScreen.routePath,
+            name: FreeCommentModifyScreen.routeName,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: FreeCommentModifyScreen(
                   no: state.pathParameters['no']!,
                   extra: state.extra,
                 ),

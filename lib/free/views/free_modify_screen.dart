@@ -124,7 +124,7 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
       if (mounted) {
         isModified = true;
         ToastMessage.showToast(context, 'success', '글을 수정했어요');
-        ref.refresh(freeListAsyncProvider('1'));
+        ref.refresh(freeListAsyncProvider(1));
         ref.refresh(freeOneDisposeAsyncProvider(result.data.no.toString()));
         context.goNamed(FreeReadScreen.routeName, pathParameters: {
           'no': result.data.no.toString(),
@@ -134,11 +134,11 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
       final code = result['statusCode'];
       switch (code) {
         case 401:
+          final storage = ref.read(secureStorageProvider);
+          await storage.deleteAll();
           if (mounted) {
-            ToastMessage.showToast(context, 'error', '다시 로그인해 주세요');
-            final storage = ref.read(secureStorageProvider);
-            await storage.deleteAll();
             context.goNamed(LoginScreen.routeName);
+            ToastMessage.showToast(context, 'error', '다시 로그인해 주세요');
           }
           break;
       }

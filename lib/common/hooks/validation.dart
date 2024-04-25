@@ -59,4 +59,14 @@ class Validation {
     }
     return null;
   }
+
+  static String? validateDeleteCheck(String text) {
+    if (text.isEmpty) {
+      return '정확히 입력해 주세요';
+    }
+    if (text.compareTo('삭제합니다') != 0) {
+      return '정확히 입력해 주세요';
+    }
+    return null;
+  }
 }

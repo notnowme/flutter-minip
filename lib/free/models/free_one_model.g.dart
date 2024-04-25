@@ -60,6 +60,7 @@ FreeOneCommentsModel _$FreeOneCommentsModelFromJson(
         Map<String, dynamic> json) =>
     FreeOneCommentsModel(
       no: json['no'] as int,
+      board_no: json['board_no'] as int,
       content: json['content'] as String,
       created_at: json['created_at'] as String,
       updated_at: json['updated_at'] as String,
@@ -71,6 +72,7 @@ Map<String, dynamic> _$FreeOneCommentsModelToJson(
         FreeOneCommentsModel instance) =>
     <String, dynamic>{
       'no': instance.no,
+      'board_no': instance.board_no,
       'content': instance.content,
       'created_at': instance.created_at,
       'updated_at': instance.updated_at,

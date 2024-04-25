@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'free_repository.dart';
+part of 'free_cmt_repository.dart';
 
 // **************************************************************************
 // RetrofitGenerator
@@ -8,8 +8,8 @@ part of 'free_repository.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
-class _FreeRepository implements FreeRepository {
-  _FreeRepository(
+class _FreeCommentRepository implements FreeCommentRepository {
+  _FreeCommentRepository(
     this._dio, {
     this.baseUrl,
   });
@@ -19,42 +19,16 @@ class _FreeRepository implements FreeRepository {
   String? baseUrl;
 
   @override
-  Future<FreeListModel> getLists({required int page}) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'page': page};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<FreeListModel>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
-    final value = FreeListModel.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
-  Future<FreeWriteModel> writedown({required Map<String, dynamic> data}) async {
+  Future<FreeCommentWriteModel> writeComment(
+      {required Map<String, dynamic> data}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     _data.addAll(data);
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<FreeWriteModel>(Options(
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<FreeCommentWriteModel>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -70,12 +44,12 @@ class _FreeRepository implements FreeRepository {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = FreeWriteModel.fromJson(_result.data!);
+    final value = FreeCommentWriteModel.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<FreeModifyModel> modify({
+  Future<FreeCommentModifyModel> modifyComment({
     required Map<String, dynamic> data,
     required String no,
   }) async {
@@ -85,9 +59,9 @@ class _FreeRepository implements FreeRepository {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     _data.addAll(data);
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<FreeModifyModel>(Options(
-      method: 'PUT',
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<FreeCommentModifyModel>(Options(
+      method: 'PATCH',
       headers: _headers,
       extra: _extra,
     )
@@ -102,12 +76,12 @@ class _FreeRepository implements FreeRepository {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = FreeModifyModel.fromJson(_result.data!);
+    final value = FreeCommentModifyModel.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<Map<String, bool>> delete({required String no}) async {
+  Future<Map<String, bool>> deleteComment({required String no}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
@@ -131,33 +105,6 @@ class _FreeRepository implements FreeRepository {
               baseUrl,
             ))));
     final value = _result.data!.cast<String, bool>();
-    return value;
-  }
-
-  @override
-  Future<FreeOneModel> getOne({required String no}) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<FreeOneModel>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/${no}',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
-    final value = FreeOneModel.fromJson(_result.data!);
     return value;
   }
 

@@ -24,7 +24,7 @@ abstract class FreeRepository {
 
   // 전체 게시글 가져오기
   @GET('/')
-  Future<FreeListModel> getLists({@Query('page') required String page});
+  Future<FreeListModel> getLists({@Query('page') required int page});
 
   // 게시글 작성
   @POST('/')
@@ -37,6 +37,13 @@ abstract class FreeRepository {
   @Headers({'accessToken': 'true'})
   Future<FreeModifyModel> modify({
     @Body() required Map<String, dynamic> data,
+    @Path() required String no,
+  });
+
+  // 게시글 삭제
+  @DELETE('/{no}')
+  @Headers({'accessToken': 'true'})
+  Future<Map<String, bool>> delete({
     @Path() required String no,
   });
 

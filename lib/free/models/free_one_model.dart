@@ -56,12 +56,13 @@ class FreeOneAuthorModel {
 
 @JsonSerializable()
 class FreeOneCommentsModel {
-  final int no;
+  final int no, board_no;
   final String content, created_at, updated_at;
   final FreeOneAuthorModel author;
 
   FreeOneCommentsModel({
     required this.no,
+    required this.board_no,
     required this.content,
     required this.created_at,
     required this.updated_at,

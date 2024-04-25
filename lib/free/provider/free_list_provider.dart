@@ -6,17 +6,17 @@ import 'package:minip/free/models/free_list_model.dart';
 import 'package:minip/free/repository/free_repository.dart';
 
 class FreeListAsyncFamilyNotifer
-    extends FamilyAsyncNotifier<FreeListModel, String> {
+    extends FamilyAsyncNotifier<FreeListModel, int> {
   FreeRepository? repo;
   late FreeListModel resultData;
 
   @override
-  FutureOr<FreeListModel> build(String arg) async {
+  FutureOr<FreeListModel> build(int arg) async {
     repo ??= ref.watch(freeRepositoryProvider);
     return await getLists(page: arg);
   }
 
-  getLists({String page = '1'}) async {
+  getLists({int page = 1}) async {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
@@ -36,7 +36,8 @@ class FreeListAsyncFamilyNotifer
   }
 }
 
-final freeListAsyncProvider = AsyncNotifierProviderFamily<
-    FreeListAsyncFamilyNotifer, FreeListModel, String>(() {
+final freeListAsyncProvider =
+    AsyncNotifierProviderFamily<FreeListAsyncFamilyNotifer, FreeListModel, int>(
+        () {
   return FreeListAsyncFamilyNotifer();
 });

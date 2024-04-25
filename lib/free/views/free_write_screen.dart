@@ -97,7 +97,7 @@ class _FreeWriteScreenState extends ConsumerState<FreeWriteScreen> {
     if (result is FreeWriteModel) {
       if (mounted) {
         ToastMessage.showToast(context, 'success', '글을 작성했어요');
-        ref.refresh(freeListAsyncProvider('1'));
+        ref.refresh(freeListAsyncProvider(1));
         context.pushReplacementNamed(FreeReadScreen.routeName, pathParameters: {
           'no': result.data.no.toString(),
         });

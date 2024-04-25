@@ -6,6 +6,9 @@ const STORAGE_USER_NO = 'NO';
 const STORAGE_ID = 'ID';
 const STORAGE_NICK = 'NICK';
 
+const PAGE_COUNT = 5;
+const PAGE_LIMIT = 20;
+
 const emulatorIp = 'http://10.0.2.2:4000/api';
 const simulatorIp = 'http://127.0.0.1:4000/api';
 
