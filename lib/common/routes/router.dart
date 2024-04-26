@@ -8,6 +8,7 @@ import 'package:minip/free/views/free_cmt_write.dart';
 import 'package:minip/free/views/free_index.dart';
 import 'package:minip/free/views/free_modify_screen.dart';
 import 'package:minip/free/views/free_read_screen.dart';
+import 'package:minip/free/views/free_search_list.dart';
 import 'package:minip/free/views/free_write_screen.dart';
 import 'package:minip/home/views/home_screen.dart';
 import 'package:minip/user/views/join_screen.dart';
@@ -156,6 +157,15 @@ StatefulShellBranch _freeBoardBranch() {
                   no: state.pathParameters['no']!,
                   extra: state.extra,
                 ),
+              );
+            },
+          ),
+          GoRoute(
+            path: FreeSearchListScreen.routePath,
+            name: FreeSearchListScreen.routeName,
+            pageBuilder: (context, state) {
+              return const NoTransitionPage(
+                child: FreeSearchListScreen(),
               );
             },
           ),

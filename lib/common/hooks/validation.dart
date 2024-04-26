@@ -69,4 +69,11 @@ class Validation {
     }
     return null;
   }
+
+  static String? validatePageMove(String text) {
+    if (int.tryParse(text) == null) {
+      return '';
+    }
+    return null;
+  }
 }

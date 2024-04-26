@@ -5,13 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minip/free/models/free_list_model.dart';
 import 'package:minip/free/repository/free_repository.dart';
 
-class FreeListAsyncFamilyNotifer
-    extends FamilyAsyncNotifier<FreeListModel, int> {
+class FreeListAsyncFamilyNotifer extends FamilyAsyncNotifier<dynamic, int> {
   FreeRepository? repo;
-  late FreeListModel resultData;
+  // error 처리를 위해 dynamic 사용.
+  // 정상적으로 됐을 경우 as로 타입 전환.
+  late dynamic resultData;
 
   @override
-  FutureOr<FreeListModel> build(int arg) async {
+  FutureOr<dynamic> build(int arg) async {
     repo ??= ref.watch(freeRepositoryProvider);
     return await getLists(page: arg);
   }
@@ -32,12 +33,11 @@ class FreeListAsyncFamilyNotifer
       };
     }
 
-    return resultData;
+    return resultData as FreeListModel;
   }
 }
 
 final freeListAsyncProvider =
-    AsyncNotifierProviderFamily<FreeListAsyncFamilyNotifer, FreeListModel, int>(
-        () {
+    AsyncNotifierProviderFamily<FreeListAsyncFamilyNotifer, dynamic, int>(() {
   return FreeListAsyncFamilyNotifer();
 });

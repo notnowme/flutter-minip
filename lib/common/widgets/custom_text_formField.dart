@@ -10,6 +10,7 @@ class CustomTextFormField extends StatefulWidget {
       this.isPassword = false,
       this.focusNode,
       this.controller,
+      this.textType,
       required this.onChanged,
       required this.validator});
 
@@ -19,6 +20,7 @@ class CustomTextFormField extends StatefulWidget {
   final FormFieldValidator validator;
   final FocusNode? focusNode;
   final TextEditingController? controller;
+  final TextInputType? textType;
 
   @override
   State<CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -49,6 +51,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         autofocus: widget.isAutoFocus,
         onChanged: widget.onChanged,
         validator: widget.validator,
+        keyboardType: widget.textType,
         autovalidateMode: AutovalidateMode.always,
         style: const TextStyle(
           decorationThickness: 0,
