@@ -3,25 +3,28 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minip/free/models/free_list_model.dart';
+import 'package:minip/free/models/free_search_model.dart';
 import 'package:minip/free/repository/free_search_repository.dart';
 
 class FreeSearchListAsyncFamilyNotifier
-    extends FamilyAsyncNotifier<dynamic, Map<String, dynamic>> {
+    extends FamilyAsyncNotifier<dynamic, FreeSearchModel> {
   FreeSearchRepository? repo;
+  late FreeSearchModel formData;
 
   late dynamic resultData;
 
   @override
-  FutureOr build(Map<String, dynamic> arg) {
+  FutureOr build(FreeSearchModel arg) async {
     repo ??= ref.watch(freeSearchRepository);
+    return await getLists(arg);
   }
 
-  getLists(String board, String cat, String keyword, int page) async {
+  getLists(FreeSearchModel form) async {
     final queries = <String, dynamic>{
-      r'board': board,
-      r'cat': cat,
-      r'keyword': keyword,
-      r'page': page,
+      'board': form.board,
+      'cat': form.cat,
+      'key': form.keyword,
+      'page': form.page,
     };
 
     state = const AsyncValue.loading();
@@ -42,6 +45,6 @@ class FreeSearchListAsyncFamilyNotifier
 }
 
 final freeSearchListAsyncProvider = AsyncNotifierProviderFamily<
-    FreeSearchListAsyncFamilyNotifier, dynamic, Map<String, dynamic>>(() {
+    FreeSearchListAsyncFamilyNotifier, dynamic, FreeSearchModel>(() {
   return FreeSearchListAsyncFamilyNotifier();
 });

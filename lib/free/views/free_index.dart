@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
@@ -439,7 +438,8 @@ class _FreeIndexScreenState extends ConsumerState<FreeIndexScreen> {
                                 onTap: () async {
                                   context.pop();
                                   context.pushNamed(
-                                      FreeSearchListScreen.routeName);
+                                      FreeSearchListScreen.routeName,
+                                      extra: searchController.text);
                                 },
                                 child: const Text(
                                   '검색',

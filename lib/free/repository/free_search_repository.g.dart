@@ -33,7 +33,7 @@ class _FreeSearchRepository implements FreeSearchRepository {
     )
             .compose(
               _dio.options,
-              '/',
+              'search',
               queryParameters: queryParameters,
               data: _data,
             )

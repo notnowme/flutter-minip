@@ -8,7 +8,7 @@ import 'package:retrofit/retrofit.dart';
 part 'free_search_repository.g.dart';
 
 final freeSearchRepository = Provider((ref) {
-  final url = '$baseUrl/search';
+  final url = '$baseUrl/';
   final dio = ref.watch(dioProvider);
   final repository = FreeSearchRepository(dio, baseUrl: url);
   return repository;
@@ -19,7 +19,7 @@ abstract class FreeSearchRepository {
   factory FreeSearchRepository(Dio dio, {String baseUrl}) =
       _FreeSearchRepository;
 
-  @GET('/')
+  @GET('search')
   Future<FreeListModel> search(
       {@Queries() required Map<String, dynamic> queries});
 }

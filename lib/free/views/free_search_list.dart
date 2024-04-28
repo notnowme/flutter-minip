@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
+import 'package:minip/free/models/free_list_model.dart';
+import 'package:minip/free/models/free_search_model.dart';
 import 'package:minip/free/provider/free_search_list_provider.dart';
+import 'package:minip/free/widgets/free_content_card.dart';
 
 class FreeSearchListScreen extends ConsumerStatefulWidget {
-  const FreeSearchListScreen({super.key});
+  const FreeSearchListScreen({super.key, this.extra});
 
   static const String routeName = 'freeSearch';
   static const String routePath = 'search';
+  final Object? extra;
 
   @override
   ConsumerState<FreeSearchListScreen> createState() =>
@@ -17,30 +21,101 @@ class FreeSearchListScreen extends ConsumerStatefulWidget {
 
 class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
   String currentCategory = 'title';
+  late FreeSearchModel form;
+  @override
+  void initState() {
+    super.initState();
+    form = FreeSearchModel(
+      board: 'free',
+      cat: currentCategory,
+      keyword: widget.extra as String,
+      page: 1,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final searchResult = ref.watch(freeSearchListAsyncProvider(form));
     return DefaultLayout(
       title: '자유 게시판',
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                renderCategoriesButton('제목', currentCategory == 'title'),
-                renderCategoriesButton('내용', currentCategory == 'content'),
-                renderCategoriesButton('작성자', currentCategory == 'author'),
-              ],
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                // final result = ref.read(freeSearchListAsyncProvider().notifier).getLists(board, cat, keyword, page)
-              },
-              child: const Text(
-                'ㅌㅅㅌ',
-              ),
-            ),
-          ],
-        ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              renderCategoriesButton('제목', currentCategory == 'title'),
+              renderCategoriesButton('내용', currentCategory == 'content'),
+              renderCategoriesButton('작성자', currentCategory == 'nick'),
+            ],
+          ),
+          searchResult.when(
+            data: (data) {
+              if (data is FreeListModel) {
+                // 페이징
+
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: data.data.length,
+                        separatorBuilder: (context, index) {
+                          return const SizedBox(
+                            height: 0,
+                          );
+                        },
+                        itemBuilder: (context, index) {
+                          var content = data.data[index];
+                          return FreeContentCard(
+                            data: content,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.cancel_presentation_rounded,
+                        size: 92,
+                        color: thirdColor,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        '게시물 결과가 없어요',
+                        style: TextStyle(
+                          color: secondaryColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      // renderPageButton(),
+                    ],
+                  ),
+                );
+              }
+            },
+            error: (err, errStack) {
+              return const Center(
+                child: Text('error'),
+              );
+            },
+            loading: () {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -58,9 +133,11 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
               currentCategory = 'content';
               break;
             case '작성자':
-              currentCategory = 'author';
+              currentCategory = 'nick';
               break;
           }
+          form = form.copywith(cat: currentCategory);
+          ref.refresh(freeSearchListAsyncProvider(form));
           setState(() {});
         },
         child: Column(

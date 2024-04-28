@@ -164,8 +164,10 @@ StatefulShellBranch _freeBoardBranch() {
             path: FreeSearchListScreen.routePath,
             name: FreeSearchListScreen.routeName,
             pageBuilder: (context, state) {
-              return const NoTransitionPage(
-                child: FreeSearchListScreen(),
+              return NoTransitionPage(
+                child: FreeSearchListScreen(
+                  extra: state.extra,
+                ),
               );
             },
           ),
