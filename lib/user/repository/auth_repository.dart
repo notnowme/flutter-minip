@@ -19,6 +19,10 @@ final authRepositoryProvider = Provider((ref) {
 @RestApi()
 abstract class AuthRepository {
   factory AuthRepository(Dio dio, {String baseUrl}) = _AuthRepository;
+  // 토큰 검증
+  @POST('/token')
+  @Headers({'accessToken': 'true'})
+  Future<AuthModel> checkToken();
 
   @POST('/check/id')
   Future<AuthModel> checkId({@Body() required Map<String, dynamic> data});

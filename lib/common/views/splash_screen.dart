@@ -1,10 +1,16 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/const/data.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/home/views/home_screen.dart';
+import 'package:minip/user/models/auth_model.dart';
+import 'package:minip/user/provider/join_provider.dart';
+import 'package:minip/user/provider/token_provider.dart';
 import 'package:minip/user/views/login_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -27,6 +33,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     super.initState();
     print('init');
     checkLogin();
+    // ref.read(joinAsyncProvider.notifier).checkToken();
   }
 
   @override
@@ -57,38 +64,55 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   // }
 
   void checkLogin() async {
+    await Future.delayed(const Duration(milliseconds: 500));
     final storage = ref.read(secureStorageProvider);
     final accessToken = await storage.read(key: ACCESS_KEY);
 
     if (accessToken == null) {
-      // 로그인 안 된 상태
-      // 나중에 토큰이 만료됐는지 확인해야 함.
       if (mounted) {
-        isLogin = false;
+        context.goNamed(LoginScreen.routeName);
       }
     } else {
+      ref.read(joinAsyncProvider.notifier).checkToken();
       // 로그인 된 상태
       if (mounted) {
-        isLogin = true;
+        final result = await ref.watch(joinAsyncProvider.notifier).checkToken();
+        if (result is AuthModel) {
+          if (result.message.isEmpty) {
+            if (mounted) {
+              context.goNamed(HomeScreen.routeName);
+            }
+          }
+        } else {
+          if (mounted) {
+            context.goNamed(LoginScreen.routeName);
+          }
+        }
       }
     }
-    setState(() {});
+    // setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      title: 'splash',
+    return const DefaultLayout(
       child: Center(
-        child: ElevatedButton(
-            onPressed: () {
-              if (isLogin) {
-                context.goNamed(HomeScreen.routeName);
-              } else {
-                context.goNamed(LoginScreen.routeName);
-              }
-            },
-            child: Text(isLogin ? '로그인 한 상태 - 홈으로' : '로그인 안 한 상태 - 로그인으로')),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '유저 정보를 확인하고 있어요...',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            CircularProgressIndicator(),
+          ],
+        ),
       ),
     );
   }

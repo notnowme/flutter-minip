@@ -3,9 +3,15 @@ import 'package:minip/common/const/colors.dart';
 import 'package:minip/user/widgets/boxBorderLayout.dart';
 
 class BoardInfoWidget extends StatelessWidget {
-  const BoardInfoWidget({super.key, required this.boardName});
+  const BoardInfoWidget({
+    super.key,
+    required this.boardName,
+    required this.boardCount,
+    required this.commentCount,
+  });
 
   final String boardName;
+  final int boardCount, commentCount;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +35,7 @@ class BoardInfoWidget extends StatelessWidget {
             IntrinsicHeight(
               child: Row(
                 children: [
-                  _renderCountInfo('게시글', 10),
+                  _renderCountInfo('게시글', boardCount),
                   const SizedBox(
                     width: 20,
                   ),
@@ -37,7 +43,7 @@ class BoardInfoWidget extends StatelessWidget {
                   const SizedBox(
                     width: 20,
                   ),
-                  _renderCountInfo('댓글', 10),
+                  _renderCountInfo('댓글', commentCount),
                 ],
               ),
             )

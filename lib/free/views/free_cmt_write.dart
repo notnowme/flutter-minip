@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
+import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_cmt_write_model.dart';
 import 'package:minip/free/provider/free_board_provider.dart';
@@ -105,9 +106,13 @@ class FreeCommentWriteScreen extends ConsumerWidget {
       ToastMessage.showToast(context, 'error', '내용은 4글자 이상 입력해야해요');
       return;
     }
+    Loading.showLoading(context);
     final result = await ref
         .read(freeBoardAsyncProvider.notifier)
         .writeComment(boardNo, text);
+    if (context.mounted) {
+      context.pop();
+    }
     if (result is FreeCommentWriteModel) {
       if (context.mounted) {
         ToastMessage.showToast(context, 'success', '댓글을 작성했어요');

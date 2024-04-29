@@ -5,6 +5,7 @@ import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/hooks/date_formatting.dart';
 import 'package:minip/common/hooks/validation.dart';
 import 'package:minip/common/widgets/custom_text_formField.dart';
+import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_one_model.dart';
 import 'package:minip/free/provider/free_board_provider.dart';
@@ -302,9 +303,13 @@ class _RenderBoardContentState extends ConsumerState<RenderBoardContent> {
   }
 
   void _delete() async {
+    Loading.showLoading(context);
     final result = await ref
         .read(freeBoardAsyncProvider.notifier)
         .delete(widget.content.no.toString());
+    if (mounted) {
+      context.pop();
+    }
     if (result['ok']) {
       if (mounted) {
         ref.refresh(freeListAsyncProvider(1));

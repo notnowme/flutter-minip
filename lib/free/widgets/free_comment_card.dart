@@ -5,6 +5,7 @@ import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/hooks/date_formatting.dart';
 import 'package:minip/common/hooks/validation.dart';
 import 'package:minip/common/widgets/custom_text_formField.dart';
+import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_one_model.dart';
 import 'package:minip/free/provider/free_board_provider.dart';
@@ -239,9 +240,13 @@ class FreeCommentCard extends ConsumerWidget {
   }
 
   void _delete(BuildContext context, WidgetRef ref) async {
+    Loading.showLoading(context);
     final result = await ref
         .read(freeBoardAsyncProvider.notifier)
         .deleteComment(comment.no.toString());
+    if (context.mounted) {
+      context.pop();
+    }
     if (result['ok']) {
       if (context.mounted) {
         ref.refresh(freeOneDisposeAsyncProvider(comment.board_no.toString()));

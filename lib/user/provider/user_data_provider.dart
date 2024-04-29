@@ -10,7 +10,7 @@ class UserDataAsyncNotifier extends AutoDisposeAsyncNotifier<UserModel?> {
   late FlutterSecureStorage storage;
 
   @override
-  FutureOr<UserModel?> build() {
+  FutureOr<UserModel?> build() async {
     storage = ref.read(secureStorageProvider);
     return getMe();
   }

@@ -16,6 +16,25 @@ class JoinAsyncNotifier extends AsyncNotifier<AuthModel> {
     return AuthModel(ok: false, message: '');
   }
 
+  checkToken() async {
+    state = const AsyncValue.loading();
+
+    state = await AsyncValue.guard(() async {
+      resultData = await repo.checkToken();
+      return resultData;
+    });
+
+    if (state.hasError) {
+      DioException error = state.error as DioException;
+      return {
+        'ok': false,
+        'statusCode': error.response?.statusCode,
+      };
+    }
+
+    return resultData;
+  }
+
   checkId(String id) async {
     state = const AsyncValue.loading();
 

@@ -7,15 +7,14 @@ import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_write_model.dart';
-import 'package:minip/free/provider/free_board_provider.dart';
-import 'package:minip/free/provider/free_list_provider.dart';
-import 'package:minip/free/views/free_read_screen.dart';
+import 'package:minip/qna/provider/qna_board_provider.dart';
+import 'package:minip/qna/provider/qna_list_provider.dart';
 import 'package:minip/user/views/login_screen.dart';
 
-class FreeWriteScreen extends ConsumerStatefulWidget {
-  const FreeWriteScreen({super.key});
+class QnaWriteScreen extends ConsumerWidget {
+  QnaWriteScreen({super.key});
 
-  static const String routeName = 'freeWrite';
+  static const String routeName = 'qnaWrite';
   static const String routePath = 'write';
 
   static const baseBorder = OutlineInputBorder(
@@ -25,20 +24,11 @@ class FreeWriteScreen extends ConsumerStatefulWidget {
     ),
   );
 
-  @override
-  ConsumerState<FreeWriteScreen> createState() => _FreeWriteScreenState();
-}
-
-class _FreeWriteScreenState extends ConsumerState<FreeWriteScreen> {
-  FocusNode titleFocus = FocusNode(), contentFocus = FocusNode();
+  final FocusNode titleFocus = FocusNode(), contentFocus = FocusNode();
   String title = '', content = '';
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        _showDialog(context);
-      },
       child: DefaultLayout(
         title: '글 작성',
         actions: [
@@ -46,7 +36,8 @@ class _FreeWriteScreenState extends ConsumerState<FreeWriteScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () async {
-                writedown();
+                // 작성
+                writedown(context, ref);
               },
               child: const Icon(
                 Icons.edit_document,
@@ -81,7 +72,7 @@ class _FreeWriteScreenState extends ConsumerState<FreeWriteScreen> {
     );
   }
 
-  void writedown() async {
+  void writedown(BuildContext context, WidgetRef ref) async {
     if (title.length < 4) {
       ToastMessage.showToast(context, 'error', '제목은 4글자 이상 입력해야해요');
       titleFocus.requestFocus();
@@ -94,106 +85,34 @@ class _FreeWriteScreenState extends ConsumerState<FreeWriteScreen> {
     }
     Loading.showLoading(context);
     final result = await ref
-        .read(freeBoardAsyncProvider.notifier)
+        .read(qnaBoardAsyncProvider.notifier)
         .writedown(title, content);
-    if (mounted) {
+    if (context.mounted) {
       context.pop();
     }
     if (result is FreeWriteModel) {
-      if (mounted) {
+      if (context.mounted) {
         ToastMessage.showToast(context, 'success', '글을 작성했어요');
-        ref.refresh(freeListAsyncProvider(1));
-        context.pushReplacementNamed(FreeReadScreen.routeName, pathParameters: {
-          'no': result.data.no.toString(),
-        });
+        ref.refresh(qnaListAsyncProvider(1));
+        // context.pushReplacementNamed(FreeReadScreen.routeName, pathParameters: {
+        //   'no': result.data.no.toString(),
+        // });
       }
     } else {
       final code = result['statusCode'];
       switch (code) {
         case 401:
-          if (mounted) {
+          if (context.mounted) {
             ToastMessage.showToast(context, 'error', '다시 로그인해 주세요');
             final storage = ref.read(secureStorageProvider);
             await storage.deleteAll();
-            context.goNamed(LoginScreen.routeName);
+            if (context.mounted) {
+              context.goNamed(LoginScreen.routeName);
+            }
           }
           break;
       }
     }
-  }
-
-  void _showDialog(BuildContext context) {
-    showDialog(
-      useRootNavigator: false,
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          backgroundColor: Colors.white.withOpacity(0.9),
-          surfaceTintColor: Colors.white.withOpacity(0.9),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          contentPadding: const EdgeInsets.all(15),
-          content: Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 1,
-                color: inputBorderColodr,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  '작성한 정보는 저장되지 않아요',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(
-                  height: 22,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        context.pop();
-                      },
-                      child: const Text(
-                        '취소',
-                        style: TextStyle(
-                          color: secondaryColor,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 40,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        context.pop();
-                        context.pop();
-                      },
-                      child: const Text(
-                        '돌아가기',
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget _renderTitleTextField() {
@@ -220,10 +139,10 @@ class _FreeWriteScreenState extends ConsumerState<FreeWriteScreen> {
           contentPadding: const EdgeInsets.all(10),
           fillColor: inputBgColor,
           filled: true,
-          border: FreeWriteScreen.baseBorder,
-          enabledBorder: FreeWriteScreen.baseBorder,
-          focusedBorder: FreeWriteScreen.baseBorder.copyWith(
-            borderSide: FreeWriteScreen.baseBorder.borderSide.copyWith(
+          border: QnaWriteScreen.baseBorder,
+          enabledBorder: QnaWriteScreen.baseBorder,
+          focusedBorder: QnaWriteScreen.baseBorder.copyWith(
+            borderSide: QnaWriteScreen.baseBorder.borderSide.copyWith(
               color: primaryColor,
             ),
           ),
@@ -259,10 +178,10 @@ class _FreeWriteScreenState extends ConsumerState<FreeWriteScreen> {
           contentPadding: const EdgeInsets.all(10),
           fillColor: inputBgColor,
           filled: true,
-          border: FreeWriteScreen.baseBorder,
-          enabledBorder: FreeWriteScreen.baseBorder,
-          focusedBorder: FreeWriteScreen.baseBorder.copyWith(
-            borderSide: FreeWriteScreen.baseBorder.borderSide.copyWith(
+          border: QnaWriteScreen.baseBorder,
+          enabledBorder: QnaWriteScreen.baseBorder,
+          focusedBorder: QnaWriteScreen.baseBorder.copyWith(
+            borderSide: QnaWriteScreen.baseBorder.borderSide.copyWith(
               color: primaryColor,
             ),
           ),

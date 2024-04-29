@@ -10,7 +10,7 @@ class UserAsyncNotifier extends AsyncNotifier<UserNickModifyModel> {
   late UserNickModifyModel resultData;
 
   @override
-  FutureOr<UserNickModifyModel> build() {
+  FutureOr<UserNickModifyModel> build() async {
     repo = ref.watch(userRepositoryProvider);
     resultData = UserNickModifyModel(
       ok: false,

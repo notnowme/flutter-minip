@@ -19,6 +19,34 @@ class _UserRepositroy implements UserRepositroy {
   String? baseUrl;
 
   @override
+  Future<UserDetailModel> getMeDetail() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<UserDetailModel>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = UserDetailModel.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<UserNickModifyModel> changeNick(
       {required Map<String, dynamic> data}) async {
     final _extra = <String, dynamic>{};

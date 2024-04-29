@@ -3,16 +3,16 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minip/free/models/free_one_model.dart';
-import 'package:minip/free/repository/free_repository.dart';
+import 'package:minip/qna/repository/qna_repository.dart';
 
-class FreeOneDisposeAsyncNotifier
+class QnaOneDisposeAsyncNotifier
     extends AutoDisposeFamilyAsyncNotifier<FreeOneModel?, String> {
-  FreeRepository? repo;
+  QnaRepository? repo;
   FreeOneModel? resultData;
 
   @override
   FutureOr<FreeOneModel?> build(String arg) async {
-    repo ??= ref.watch(freeRepositoryProvider);
+    repo ??= ref.watch(qnaRepositoryProvider);
     return await getOne(arg);
   }
 
@@ -39,7 +39,7 @@ class FreeOneDisposeAsyncNotifier
   }
 }
 
-final freeOneDisposeAsyncProvider = AutoDisposeAsyncNotifierProviderFamily<
-    FreeOneDisposeAsyncNotifier, FreeOneModel?, String>(() {
-  return FreeOneDisposeAsyncNotifier();
+final qnaOneDisposeAsyncProvider = AutoDisposeAsyncNotifierProviderFamily<
+    QnaOneDisposeAsyncNotifier, FreeOneModel?, String>(() {
+  return QnaOneDisposeAsyncNotifier();
 });

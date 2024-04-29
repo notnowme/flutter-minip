@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
+import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_modify_model.dart';
 import 'package:minip/free/models/free_one_model.dart';
@@ -117,9 +118,13 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
       contentFocus.requestFocus();
       return;
     }
+    Loading.showLoading(context);
     final result = await ref
         .read(freeBoardAsyncProvider.notifier)
         .modify(title, content, no);
+    if (mounted) {
+      context.pop();
+    }
     if (result is FreeModifyModel) {
       if (mounted) {
         isModified = true;

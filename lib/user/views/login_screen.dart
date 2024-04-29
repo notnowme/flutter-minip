@@ -7,6 +7,7 @@ import 'package:minip/common/hooks/validation.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/common/widgets/custom_text_formField.dart';
+import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/home/views/home_screen.dart';
 import 'package:minip/user/models/login_req_model.dart';
@@ -157,7 +158,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _renderButton() {
     void login() async {
       LoginReqModel user = LoginReqModel(id: id, password: password);
+      Loading.showLoading(context);
       final result = await ref.read(loginAsyncProvider.notifier).login(user);
+      if (mounted) {
+        context.pop();
+      }
       if (result is LoginResModel) {
         final storage = ref.read(secureStorageProvider);
 

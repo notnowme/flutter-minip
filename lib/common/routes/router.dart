@@ -11,6 +11,9 @@ import 'package:minip/free/views/free_read_screen.dart';
 import 'package:minip/free/views/free_search_list.dart';
 import 'package:minip/free/views/free_write_screen.dart';
 import 'package:minip/home/views/home_screen.dart';
+import 'package:minip/qna/views/qna_index.dart';
+import 'package:minip/qna/views/qna_read_screen.dart';
+import 'package:minip/qna/views/qna_write_screen.dart';
 import 'package:minip/user/views/join_screen.dart';
 import 'package:minip/user/views/login_screen.dart';
 import 'package:minip/user/views/profile_screen.dart';
@@ -23,6 +26,9 @@ final GlobalKey<NavigatorState> _homeNavigatorKey =
 
 final GlobalKey<NavigatorState> _freeBoardNavigatorKey =
     GlobalKey(debugLabel: 'free');
+
+final GlobalKey<NavigatorState> _qnaBoardNavigatorKey =
+    GlobalKey(debugLabel: 'qna');
 
 final GlobalKey<NavigatorState> _profileNavigatorKey =
     GlobalKey(debugLabel: 'profile');
@@ -68,6 +74,7 @@ final routesProvider = Provider(
           branches: <StatefulShellBranch>[
             _homeBranch(),
             _freeBoardBranch(),
+            _qnaBoardBranch(),
             _profileBranch(),
           ],
         ),
@@ -168,6 +175,43 @@ StatefulShellBranch _freeBoardBranch() {
                 child: FreeSearchListScreen(
                   extra: state.extra,
                 ),
+              );
+            },
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+StatefulShellBranch _qnaBoardBranch() {
+  return StatefulShellBranch(
+    navigatorKey: _qnaBoardNavigatorKey,
+    routes: [
+      GoRoute(
+        path: QnaIndexScreen.routePath,
+        name: QnaIndexScreen.routeName,
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(
+            child: QnaIndexScreen(),
+          );
+        },
+        routes: [
+          GoRoute(
+            path: QnaWriteScreen.routePath,
+            name: QnaWriteScreen.routeName,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: QnaWriteScreen(),
+              );
+            },
+          ),
+          GoRoute(
+            path: QnaReadScreen.routePath,
+            name: QnaReadScreen.routeName,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: QnaReadScreen(no: state.pathParameters['no']!),
               );
             },
           ),

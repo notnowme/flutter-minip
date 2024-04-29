@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
+import 'package:minip/user/models/user_nick_modify_model.dart';
 import 'package:minip/user/provider/user_data_provider.dart';
+import 'package:minip/user/provider/user_detail_data_provider.dart';
+import 'package:minip/user/provider/user_provider.dart';
 import 'package:minip/user/views/login_screen.dart';
 import 'package:minip/user/widgets/profile_board_info.dart';
 import 'package:minip/user/widgets/profile_user_info.dart';
@@ -29,10 +32,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return ref.watch(userDataAsyncNotifier).when(
-      data: (data) {
-        if (data == null) {
+      data: (userData) {
+        if (userData == null) {
           return const Center(
-            child: Text('error'),
+            child: CircularProgressIndicator(),
           );
         } else {
           return DefaultLayout(
@@ -50,25 +53,52 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         height: 40,
                       ),
                       UserInfoWidget(
-                        id: data.id,
-                        nick: data.nick,
+                        id: userData.id,
+                        nick: userData.nick,
                       ),
                       const SizedBox(
                         height: 20,
                       ),
-                      const BoardInfoWidget(
-                        boardName: '자유 게시판',
+                      ref.watch(userDetailDataAsyncProvider).when(
+                        data: (data) {
+                          if (data != null) {
+                            return Column(
+                              children: [
+                                BoardInfoWidget(
+                                  boardName: '자유 게시판',
+                                  boardCount: data.freeBoardCount,
+                                  commentCount: data.freeCommentCount,
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                BoardInfoWidget(
+                                  boardName: '질문 게시판',
+                                  boardCount: data.qnaBoardCount,
+                                  commentCount: data.qnaCommentCount,
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                _renderLogoutButton(ref, context),
+                              ],
+                            );
+                          } else {
+                            return const Text('no data...');
+                          }
+                        },
+                        error: (err, errStack) {
+                          print(err);
+                          return const Center(
+                            child: Text('Something error...'),
+                          );
+                        },
+                        loading: () {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const BoardInfoWidget(
-                        boardName: '질문 게시판',
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      _renderLogoutButton(ref, context),
                     ],
                   ),
                   _renderWithdrawButton(),
@@ -79,14 +109,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         }
       },
       error: (error, stackTrace) {
+        print(error);
         return const Center(
           child: Text('error!'),
         );
       },
       loading: () {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        return Container();
       },
     );
   }

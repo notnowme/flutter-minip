@@ -7,6 +7,7 @@ import 'package:minip/common/const/data.dart';
 import 'package:minip/common/hooks/validation.dart';
 import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/common/widgets/custom_text_formField.dart';
+import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/user/models/user_nick_modify_model.dart';
 import 'package:minip/user/provider/user_data_provider.dart';
@@ -30,8 +31,15 @@ class UserInfoWidget extends StatefulWidget {
 class _UserInfoWidgetState extends State<UserInfoWidget> {
   TextEditingController nickController = TextEditingController();
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      print('load...');
+    } else {
+      print('end...');
+    }
     return BoxBorderLayout(
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -187,9 +195,13 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                   ),
                                   GestureDetector(
                                     onTap: () async {
+                                      Loading.showLoading(context);
                                       final result = await ref
                                           .read(userAsyncProvider.notifier)
                                           .changeNick(nickController.text);
+                                      if (context.mounted) {
+                                        context.pop();
+                                      }
                                       if (result is UserNickModifyModel) {
                                         await storage.write(
                                             key: STORAGE_NICK,

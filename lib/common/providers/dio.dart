@@ -46,6 +46,7 @@ class CustomInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     debugPrint('Dio Error 발생');
+
     return super.onError(err, handler);
   }
 }
