@@ -24,7 +24,7 @@ class CustomInterceptor extends Interceptor {
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
     debugPrint('Dio Request 실행');
-    print(options.uri);
+
     if (options.headers['accessToken'] == 'true') {
       options.headers.remove('accessToken');
 

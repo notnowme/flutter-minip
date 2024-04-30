@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minip/common/const/colors.dart';
-import 'package:minip/free/provider/free_page_num_provider.dart';
+import 'package:minip/qna/provider/qna_page_num_provider.dart';
 
 class PageNumList extends ConsumerStatefulWidget {
   const PageNumList({
@@ -10,11 +10,12 @@ class PageNumList extends ConsumerStatefulWidget {
     required this.totalPage,
     required this.firstPage,
     required this.lastPage,
+    required this.page,
   });
 
   final int totalPage;
   final AsyncNotifierProviderFamily provider;
-  final int firstPage, lastPage;
+  final int firstPage, lastPage, page;
 
   @override
   ConsumerState<PageNumList> createState() => _PageNumListState();
@@ -23,7 +24,7 @@ class PageNumList extends ConsumerStatefulWidget {
 class _PageNumListState extends ConsumerState<PageNumList> {
   @override
   Widget build(BuildContext context) {
-    final page = ref.watch(freePageNumProvider);
+    final page = ref.watch(qnaPageNumProvider);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +35,7 @@ class _PageNumListState extends ConsumerState<PageNumList> {
             if (page == 1) {
               return;
             } else {
-              ref.read(freePageNumProvider.notifier).update(page - 1);
+              ref.read(qnaPageNumProvider.notifier).update(page - 1);
               ref.refresh(widget.provider(page));
             }
           },
@@ -53,7 +54,7 @@ class _PageNumListState extends ConsumerState<PageNumList> {
         page < widget.totalPage
             ? GestureDetector(
                 onTap: () async {
-                  ref.read(freePageNumProvider.notifier).update(page + 1);
+                  ref.read(qnaPageNumProvider.notifier).update(page + 1);
                   ref.refresh(widget.provider(page));
                 },
                 child: const Icon(
@@ -66,7 +67,7 @@ class _PageNumListState extends ConsumerState<PageNumList> {
   }
 
   Widget renderList(int index) {
-    final page = ref.watch(freePageNumProvider);
+    final page = ref.watch(qnaPageNumProvider);
     bool isCurrent = page == index;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -75,7 +76,7 @@ class _PageNumListState extends ConsumerState<PageNumList> {
           if (isCurrent) {
             return;
           }
-          ref.read(freePageNumProvider.notifier).update(index);
+          ref.read(qnaPageNumProvider.notifier).update(index);
           ref.refresh(widget.provider(page));
         },
         child: Text(

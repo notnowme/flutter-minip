@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minip/common/boards/widgets/comment_card.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/free/models/free_one_model.dart';
-import 'package:minip/free/views/free_cmt_write.dart';
-import 'package:minip/free/widgets/free_comment_card.dart';
 
-class FreeCommentsList extends StatelessWidget {
-  const FreeCommentsList({
+class CommentList extends StatelessWidget {
+  const CommentList({
     super.key,
     required this.comments,
     required this.boardNo,
     required this.myId,
+    required this.routeName,
+    required this.commentModifyRouterName,
+    required this.deleteComment,
   });
 
   final List<FreeOneCommentsModel> comments;
   final int boardNo;
   final String? myId;
+  final String routeName;
+  final String commentModifyRouterName;
+  final Function deleteComment;
+
   @override
   Widget build(BuildContext context) {
     final hasComment = comments.isNotEmpty;
@@ -27,25 +33,24 @@ class FreeCommentsList extends StatelessWidget {
             vertical: 10,
             horizontal: 20,
           ),
-          child: Align(
-            alignment: Alignment.topRight,
-            child: GestureDetector(
-              onTap: () {
-                // 댓글 작성 이동
-                // 글 번호 받아가지고 와야 댈 듯...
-                context.pushNamed(
-                  FreeCommentWriteScreen.routeName,
-                  pathParameters: {'no': '1'},
-                  extra: boardNo,
-                );
-              },
-              child: const Icon(
-                Icons.edit,
-                size: 24,
-                color: primaryColor,
-              ),
-            ),
-          ),
+          child: myId == null
+              ? Container()
+              : Align(
+                  alignment: Alignment.topRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      context.pushNamed(
+                        routeName,
+                        pathParameters: {'no': boardNo.toString()},
+                      );
+                    },
+                    child: const Icon(
+                      Icons.edit,
+                      size: 24,
+                      color: primaryColor,
+                    ),
+                  ),
+                ),
         ),
         hasComment
             ? ListView.separated(
@@ -68,9 +73,12 @@ class FreeCommentsList extends StatelessWidget {
                         ),
                       ),
                     ),
-                    child: FreeCommentCard(
+                    child: CommentCard(
                       comment: comment,
                       isAuthorMe: myId == comment.author.id,
+                      routeName: routeName,
+                      commentModifyRouterName: commentModifyRouterName,
+                      deleteComment: deleteComment,
                     ),
                   );
                 },

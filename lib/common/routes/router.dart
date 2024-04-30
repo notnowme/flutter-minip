@@ -11,8 +11,12 @@ import 'package:minip/free/views/free_read_screen.dart';
 import 'package:minip/free/views/free_search_list.dart';
 import 'package:minip/free/views/free_write_screen.dart';
 import 'package:minip/home/views/home_screen.dart';
+import 'package:minip/qna/views/qna_cmt_modify.dart';
+import 'package:minip/qna/views/qna_cmt_write.dart';
 import 'package:minip/qna/views/qna_index.dart';
+import 'package:minip/qna/views/qna_modify_screen.dart';
 import 'package:minip/qna/views/qna_read_screen.dart';
+import 'package:minip/qna/views/qna_search_list.dart';
 import 'package:minip/qna/views/qna_write_screen.dart';
 import 'package:minip/user/views/join_screen.dart';
 import 'package:minip/user/views/login_screen.dart';
@@ -150,7 +154,6 @@ StatefulShellBranch _freeBoardBranch() {
               return NoTransitionPage(
                 child: FreeCommentWriteScreen(
                   no: state.pathParameters['no']!,
-                  extra: state.extra,
                 ),
               );
             },
@@ -212,6 +215,52 @@ StatefulShellBranch _qnaBoardBranch() {
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 child: QnaReadScreen(no: state.pathParameters['no']!),
+              );
+            },
+          ),
+          GoRoute(
+            path: QnaModifyScreen.routePath,
+            name: QnaModifyScreen.routeName,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: QnaModifyScreen(
+                  no: state.pathParameters['no']!,
+                  extra: state.extra,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: QnaCommentWriteScreen.routePath,
+            name: QnaCommentWriteScreen.routeName,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: QnaCommentWriteScreen(
+                  no: state.pathParameters['no']!,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: QnaCommentModifyScreen.routePath,
+            name: QnaCommentModifyScreen.routeName,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: QnaCommentModifyScreen(
+                  no: state.pathParameters['no']!,
+                  extra: state.extra,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: QnaSearchListScreen.routePath,
+            name: QnaSearchListScreen.routeName,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: QnaSearchListScreen(
+                  extra: state.extra,
+                ),
               );
             },
           ),

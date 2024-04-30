@@ -68,7 +68,7 @@ class ToastMessage {
     if (context.mounted) {
       fToast.showToast(
         child: toast,
-        toastDuration: const Duration(milliseconds: 1500),
+        toastDuration: const Duration(milliseconds: 1000),
         gravity: ToastGravity.CENTER,
         // positionedToastBuilder: (context, child) {
         //   return Stack(

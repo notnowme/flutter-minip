@@ -8,11 +8,11 @@ import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_cmt_modify_model.dart';
-import 'package:minip/free/provider/free_board_provider.dart';
-import 'package:minip/free/provider/free_one_provider.dart';
+import 'package:minip/qna/provider/qna_board_provider.dart';
+import 'package:minip/qna/provider/qna_one_provider.dart';
 
-class FreeCommentModifyScreen extends ConsumerWidget {
-  const FreeCommentModifyScreen({
+class QnaCommentModifyScreen extends ConsumerWidget {
+  const QnaCommentModifyScreen({
     super.key,
     required this.no,
     this.extra,
@@ -21,7 +21,7 @@ class FreeCommentModifyScreen extends ConsumerWidget {
   final String no;
   final Object? extra;
 
-  static const String routeName = 'freeCmtModify';
+  static const String routeName = 'qnaCmtModify';
   static const String routePath = 'cmt/modify/:no';
 
   @override
@@ -29,15 +29,7 @@ class FreeCommentModifyScreen extends ConsumerWidget {
     final prevContent = extra as String;
     final contentController = TextEditingController();
     contentController.text = prevContent;
-    print(prevContent);
     const int maxLines = 20;
-    String contentText = '';
-    const baseBorder = OutlineInputBorder(
-      borderSide: BorderSide(
-        color: inputBorderColodr,
-        width: 1,
-      ),
-    );
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
@@ -61,7 +53,9 @@ class FreeCommentModifyScreen extends ConsumerWidget {
         ],
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(
+              20,
+            ),
             child: SizedBox(
               width: double.infinity,
               height: maxLines * 20,
@@ -76,14 +70,18 @@ class FreeCommentModifyScreen extends ConsumerWidget {
   }
 
   void modifyComment(
-      BuildContext context, String text, WidgetRef ref, String cmtNo) async {
+    BuildContext context,
+    String text,
+    WidgetRef ref,
+    String cmtNo,
+  ) async {
     if (text.length < 4) {
       ToastMessage.showToast(context, 'error', '내용은 4글자 이상 입력해야해요');
       return;
     }
     Loading.showLoading(context);
     final result = await ref
-        .read(freeBoardAsyncProvider.notifier)
+        .read(qnaBoardAsyncProvider.notifier)
         .modifyComment(cmtNo, text);
     if (context.mounted) {
       context.pop();
@@ -92,7 +90,7 @@ class FreeCommentModifyScreen extends ConsumerWidget {
       if (context.mounted) {
         ToastMessage.showToast(context, 'success', '댓글을 수정했어요');
         ref.refresh(
-            freeOneDisposeAsyncProvider(result.data.board_no.toString()));
+            qnaOneDisposeAsyncProvider(result.data.board_no.toString()));
         context.pop();
       }
     } else {

@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,18 +8,18 @@ import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_cmt_write_model.dart';
-import 'package:minip/free/provider/free_board_provider.dart';
-import 'package:minip/free/provider/free_one_provider.dart';
+import 'package:minip/qna/provider/qna_board_provider.dart';
+import 'package:minip/qna/provider/qna_one_provider.dart';
 
-class FreeCommentWriteScreen extends ConsumerWidget {
-  const FreeCommentWriteScreen({
+class QnaCommentWriteScreen extends ConsumerWidget {
+  const QnaCommentWriteScreen({
     super.key,
     required this.no,
   });
 
   final String no;
 
-  static const String routeName = 'freeCmtWrite';
+  static const String routeName = 'qnaCmtWrite';
   static const String routePath = 'cmt/write/:no';
 
   @override
@@ -34,33 +33,36 @@ class FreeCommentWriteScreen extends ConsumerWidget {
         BackAlertDialog.show(context);
       },
       child: DefaultLayout(
-          title: '댓글 작성',
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: GestureDetector(
-                onTap: () async {
-                  writedownComment(
-                    context,
-                    contentController.text,
-                    ref,
-                    boardNo,
-                  );
-                },
-                child: const Icon(
-                  Icons.edit_document,
-                  color: primaryColor,
-                ),
+        title: '댓글 작성',
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(
+              right: 20,
+            ),
+            child: GestureDetector(
+              onTap: () async {
+                _writedownComment(
+                  context,
+                  contentController.text,
+                  ref,
+                  boardNo,
+                );
+              },
+              child: const Icon(
+                Icons.edit_document,
+                color: primaryColor,
               ),
             ),
-          ],
-          child: CustomBoardTextFormField(
-            controller: contentController,
-          )),
+          ),
+        ],
+        child: CustomBoardTextFormField(
+          controller: contentController,
+        ),
+      ),
     );
   }
 
-  void writedownComment(
+  void _writedownComment(
     BuildContext context,
     String text,
     WidgetRef ref,
@@ -72,7 +74,7 @@ class FreeCommentWriteScreen extends ConsumerWidget {
     }
     Loading.showLoading(context);
     final result = await ref
-        .read(freeBoardAsyncProvider.notifier)
+        .read(qnaBoardAsyncProvider.notifier)
         .writeComment(boardNo, text);
     if (context.mounted) {
       context.pop();
@@ -81,7 +83,7 @@ class FreeCommentWriteScreen extends ConsumerWidget {
       if (context.mounted) {
         ToastMessage.showToast(context, 'success', '댓글을 작성했어요');
         ref.refresh(
-            freeOneDisposeAsyncProvider(result.data.board_no.toString()));
+            qnaOneDisposeAsyncProvider(result.data.board_no.toString()));
         context.pop();
       }
     } else {

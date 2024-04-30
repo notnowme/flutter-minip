@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:minip/common/boards/widgets/no_result.dart';
-import 'package:minip/common/boards/widgets/page_button.dart';
-import 'package:minip/common/boards/widgets/page_num_list.dart';
+import 'package:minip/common/boards/widgets/content_card.dart';
+import 'package:minip/free/widgets/no_result.dart';
+import 'package:minip/free/widgets/page_button.dart';
+import 'package:minip/free/widgets/page_num_list.dart';
 import 'package:minip/common/boards/widgets/result_text.dart';
 import 'package:minip/common/boards/widgets/search_bottom_sheet.dart';
 import 'package:minip/common/const/colors.dart';
@@ -12,8 +13,8 @@ import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/free/models/free_list_model.dart';
 import 'package:minip/free/provider/free_list_provider.dart';
 import 'package:minip/free/provider/free_page_num_provider.dart';
+import 'package:minip/free/views/free_read_screen.dart';
 import 'package:minip/free/views/free_search_list.dart';
-import 'package:minip/free/widgets/free_content_card.dart';
 import 'package:minip/free/views/free_write_screen.dart';
 
 class FreeIndexScreen extends ConsumerStatefulWidget {
@@ -122,8 +123,9 @@ class _FreeIndexScreenState extends ConsumerState<FreeIndexScreen> {
                     },
                     itemBuilder: (context, index) {
                       var content = data.data[index];
-                      return FreeContentCard(
+                      return ContentCard(
                         data: content,
+                        routeName: FreeReadScreen.routeName,
                       );
                     },
                   ),
@@ -139,6 +141,7 @@ class _FreeIndexScreenState extends ConsumerState<FreeIndexScreen> {
                     totalPage: totalPage,
                     firstPage: firstPage,
                     lastPage: lastPage,
+                    page: page,
                   ),
                   const SizedBox(
                     height: 20,

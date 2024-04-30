@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final freePageNumProvider = NotifierProvider<FreePageNumNotifier, int>(() {
+final freePageNumProvider =
+    AutoDisposeNotifierProvider<FreePageNumNotifier, int>(() {
   return FreePageNumNotifier();
 });
 
-class FreePageNumNotifier extends Notifier<int> {
+class FreePageNumNotifier extends AutoDisposeNotifier<int> {
   @override
   int build() {
     return 1;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/boards/widgets/content_card.dart';
+import 'package:minip/common/boards/widgets/result_text.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/const/data.dart';
 import 'package:minip/common/hooks/validation.dart';
@@ -9,22 +10,26 @@ import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/widgets/custom_text_formField.dart';
 import 'package:minip/free/models/free_list_model.dart';
 import 'package:minip/free/models/free_search_model.dart';
-import 'package:minip/free/provider/free_search_list_provider.dart';
-import 'package:minip/free/views/free_read_screen.dart';
+import 'package:minip/qna/provider/qna_search_list_provider.dart';
+import 'package:minip/qna/provider/qna_search_page_num_provider.dart';
+import 'package:minip/qna/views/qna_read_screen.dart';
 
-class FreeSearchListScreen extends ConsumerStatefulWidget {
-  const FreeSearchListScreen({super.key, this.extra});
+class QnaSearchListScreen extends ConsumerStatefulWidget {
+  const QnaSearchListScreen({
+    super.key,
+    this.extra,
+  });
 
-  static const String routeName = 'freeSearch';
+  static const String routeName = 'qnaSearch';
   static const String routePath = 'search';
   final Object? extra;
 
   @override
-  ConsumerState<FreeSearchListScreen> createState() =>
-      _FreeSearchListScreenState();
+  ConsumerState<QnaSearchListScreen> createState() =>
+      _QnaSearchListScreenState();
 }
 
-class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
+class _QnaSearchListScreenState extends ConsumerState<QnaSearchListScreen> {
   String currentCategory = 'title';
   late FreeSearchModel form;
   int pageGroup = 0;
@@ -34,11 +39,12 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
   int prevPage = 0;
   TextEditingController pageNumController = TextEditingController();
   GlobalKey<FormState> pageKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     form = FreeSearchModel(
-      board: 'free',
+      board: 'qna',
       cat: currentCategory,
       keyword: widget.extra as String,
       page: 1,
@@ -47,9 +53,10 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final searchResult = ref.watch(freeSearchListAsyncProvider(form));
+    final searchResult = ref.watch(qnaSearchListAsyncProvider(form));
+    final page = ref.watch(qnaSearchPageNumProvider);
     return DefaultLayout(
-      title: '자유 게시판 검색',
+      title: '질문 게시판 검색',
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -63,10 +70,9 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
             searchResult.when(
               data: (data) {
                 if (data is FreeListModel) {
-                  // 페이징
                   int totalPage = (data.allCounts / 20).ceil();
 
-                  pageGroup = (form.page / PAGE_COUNT).ceil();
+                  pageGroup = (page / PAGE_COUNT).ceil();
 
                   lastPage = pageGroup * PAGE_COUNT > totalPage
                       ? totalPage
@@ -96,41 +102,18 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
                           var content = data.data[index];
                           return ContentCard(
                             data: content,
-                            routeName: FreeReadScreen.routeName,
+                            routeName: QnaReadScreen.routeName,
                           );
                         },
                       ),
                       const SizedBox(
                         height: 10,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: 20,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              '검색된 ${data.allCounts}개의 게시글 중 ${form.page}번째 페이지',
-                              style: const TextStyle(
-                                color: secondaryColor,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      ResultText(allCounts: data.allCounts, page: page),
                       const SizedBox(
                         height: 20,
                       ),
                       renderPageNumList(totalPage),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      renderPageButton(),
-                      const SizedBox(
-                        height: 20,
-                      ),
                     ],
                   );
                 } else {
@@ -200,7 +183,7 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
               break;
           }
           form = form.copywith(cat: currentCategory);
-          ref.refresh(freeSearchListAsyncProvider(form));
+          ref.refresh(qnaSearchListAsyncProvider(form));
           setState(() {});
         },
         child: Column(
@@ -242,7 +225,7 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
               return;
             } else {
               form = form.copywith(page: form.page - 1);
-              ref.refresh(freeSearchListAsyncProvider(form));
+              ref.refresh(qnaSearchListAsyncProvider(form));
               setState(() {});
             }
           },
@@ -262,7 +245,7 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
             ? GestureDetector(
                 onTap: () async {
                   form = form.copywith(page: form.page + 1);
-                  ref.refresh(freeSearchListAsyncProvider(form));
+                  ref.refresh(qnaSearchListAsyncProvider(form));
                   setState(() {});
                 },
                 child: const Icon(
@@ -286,7 +269,7 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
             return;
           }
           form = form.copywith(page: index);
-          ref.refresh(freeSearchListAsyncProvider(form));
+          ref.refresh(qnaSearchListAsyncProvider(form));
           setState(() {});
         },
         child: Text(
@@ -427,7 +410,7 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
                                         page:
                                             int.parse(pageNumController.text));
                                     ref.refresh(
-                                        freeSearchListAsyncProvider(form));
+                                        qnaSearchListAsyncProvider(form));
                                     setState(() {});
                                   }
                                 },

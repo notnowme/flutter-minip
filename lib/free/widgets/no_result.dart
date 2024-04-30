@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:minip/common/boards/widgets/page_button.dart';
+import 'package:minip/free/widgets/page_button.dart';
 import 'package:minip/common/const/colors.dart';
 
 class NoResult extends StatelessWidget {

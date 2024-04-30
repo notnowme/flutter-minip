@@ -9,6 +9,7 @@ import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_write_model.dart';
 import 'package:minip/qna/provider/qna_board_provider.dart';
 import 'package:minip/qna/provider/qna_list_provider.dart';
+import 'package:minip/qna/views/qna_read_screen.dart';
 import 'package:minip/user/views/login_screen.dart';
 
 class QnaWriteScreen extends ConsumerWidget {
@@ -94,9 +95,12 @@ class QnaWriteScreen extends ConsumerWidget {
       if (context.mounted) {
         ToastMessage.showToast(context, 'success', '글을 작성했어요');
         ref.refresh(qnaListAsyncProvider(1));
-        // context.pushReplacementNamed(FreeReadScreen.routeName, pathParameters: {
-        //   'no': result.data.no.toString(),
-        // });
+        context.pushReplacementNamed(
+          QnaReadScreen.routeName,
+          pathParameters: {
+            'no': result.data.no.toString(),
+          },
+        );
       }
     } else {
       final code = result['statusCode'];
