@@ -115,7 +115,9 @@ class _FreeWriteScreenState extends ConsumerState<FreeWriteScreen> {
             ToastMessage.showToast(context, 'error', '다시 로그인해 주세요');
             final storage = ref.read(secureStorageProvider);
             await storage.deleteAll();
-            context.goNamed(LoginScreen.routeName);
+            if (mounted) {
+              context.goNamed(LoginScreen.routeName);
+            }
           }
           break;
       }

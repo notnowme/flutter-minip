@@ -1,16 +1,12 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/const/data.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/home/views/home_screen.dart';
 import 'package:minip/user/models/auth_model.dart';
 import 'package:minip/user/provider/join_provider.dart';
-import 'package:minip/user/provider/token_provider.dart';
 import 'package:minip/user/views/login_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -31,7 +27,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    print('init');
     checkLogin();
     // ref.read(joinAsyncProvider.notifier).checkToken();
   }

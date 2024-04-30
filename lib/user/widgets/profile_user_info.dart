@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
@@ -35,11 +34,6 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      print('load...');
-    } else {
-      print('end...');
-    }
     return BoxBorderLayout(
       child: Padding(
         padding: const EdgeInsets.all(10.0),

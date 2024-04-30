@@ -29,15 +29,7 @@ class FreeCommentModifyScreen extends ConsumerWidget {
     final prevContent = extra as String;
     final contentController = TextEditingController();
     contentController.text = prevContent;
-    print(prevContent);
     const int maxLines = 20;
-    String contentText = '';
-    const baseBorder = OutlineInputBorder(
-      borderSide: BorderSide(
-        color: inputBorderColodr,
-        width: 1,
-      ),
-    );
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/hooks/validation.dart';
 import 'package:minip/common/widgets/custom_text_formField.dart';
-import 'package:minip/free/provider/free_page_num_provider.dart';
 import 'package:minip/qna/provider/qna_page_num_provider.dart';
 
 class PageMoveButton extends ConsumerWidget {

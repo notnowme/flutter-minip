@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
@@ -9,7 +8,6 @@ import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_modify_model.dart';
 import 'package:minip/free/models/free_one_model.dart';
-import 'package:minip/free/models/free_write_model.dart';
 import 'package:minip/free/provider/free_board_provider.dart';
 import 'package:minip/free/provider/free_list_provider.dart';
 import 'package:minip/free/provider/free_one_provider.dart';

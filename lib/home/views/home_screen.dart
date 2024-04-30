@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/layouts/default_layout.dart';
-import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/user/views/profile_screen.dart';
 
 class HomeScreen extends ConsumerWidget {

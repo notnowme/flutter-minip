@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
-import 'package:minip/user/models/user_nick_modify_model.dart';
 import 'package:minip/user/provider/user_data_provider.dart';
 import 'package:minip/user/provider/user_detail_data_provider.dart';
-import 'package:minip/user/provider/user_provider.dart';
 import 'package:minip/user/views/login_screen.dart';
 import 'package:minip/user/widgets/profile_board_info.dart';
 import 'package:minip/user/widgets/profile_user_info.dart';
@@ -88,7 +86,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           }
                         },
                         error: (err, errStack) {
-                          print(err);
                           return const Center(
                             child: Text('Something error...'),
                           );
@@ -109,7 +106,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         }
       },
       error: (error, stackTrace) {
-        print(error);
         return const Center(
           child: Text('error!'),
         );

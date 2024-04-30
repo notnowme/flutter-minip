@@ -38,8 +38,6 @@ class QnaModifyScreen extends ConsumerWidget {
   FocusNode titleFocus = FocusNode(), contentFocus = FocusNode();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    FocusNode titleFocus = FocusNode(), contentFocus = FocusNode();
-
     final prevContent = extra as FreeOneDataModel;
     titleController.text = prevContent.title;
     contentController.text = prevContent.content;
