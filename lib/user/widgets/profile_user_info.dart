@@ -12,7 +12,7 @@ import 'package:minip/user/models/user_nick_modify_model.dart';
 import 'package:minip/user/provider/user_data_provider.dart';
 import 'package:minip/user/provider/user_provider.dart';
 import 'package:minip/user/views/login_screen.dart';
-import 'package:minip/user/widgets/boxBorderLayout.dart';
+import 'package:minip/common/widgets/boxBorderLayout.dart';
 
 class UserInfoWidget extends StatefulWidget {
   const UserInfoWidget({

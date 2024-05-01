@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minip/common/const/colors.dart';
-import 'package:minip/user/widgets/boxBorderLayout.dart';
+import 'package:minip/common/widgets/boxBorderLayout.dart';
 
 class BoardInfoWidget extends StatelessWidget {
   const BoardInfoWidget({

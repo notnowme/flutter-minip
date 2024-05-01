@@ -19,20 +19,20 @@ class _RecentRepository implements RecentRepository {
   String? baseUrl;
 
   @override
-  Future<FreeListModel> getFreeRecentLists() async {
+  Future<RecentBoardModel> getFreeRecentLists() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<FreeListModel>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<RecentBoardModel>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              '/free/recent',
+              '/free',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -41,25 +41,25 @@ class _RecentRepository implements RecentRepository {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = FreeListModel.fromJson(_result.data!);
+    final value = RecentBoardModel.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<FreeListModel> getQnaRecentLists() async {
+  Future<RecentBoardModel> getQnaRecentLists() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<FreeListModel>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<RecentBoardModel>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              '/qna/recent',
+              '/qna',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -68,7 +68,7 @@ class _RecentRepository implements RecentRepository {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = FreeListModel.fromJson(_result.data!);
+    final value = RecentBoardModel.fromJson(_result.data!);
     return value;
   }
 
