@@ -11,11 +11,13 @@ class PageNumList extends ConsumerStatefulWidget {
     required this.firstPage,
     required this.lastPage,
     required this.page,
+    required this.scroller,
   });
 
   final int totalPage;
   final AsyncNotifierProviderFamily provider;
   final int firstPage, lastPage, page;
+  final ScrollController scroller;
 
   @override
   ConsumerState<PageNumList> createState() => _PageNumListState();
@@ -37,6 +39,7 @@ class _PageNumListState extends ConsumerState<PageNumList> {
             } else {
               ref.read(qnaPageNumProvider.notifier).update(page - 1);
               ref.refresh(widget.provider(page));
+              widget.scroller.jumpTo(0);
             }
           },
           child: Icon(
@@ -56,6 +59,7 @@ class _PageNumListState extends ConsumerState<PageNumList> {
                 onTap: () async {
                   ref.read(qnaPageNumProvider.notifier).update(page + 1);
                   ref.refresh(widget.provider(page));
+                  widget.scroller.jumpTo(0);
                 },
                 child: const Icon(
                   Icons.chevron_right_rounded,
@@ -78,6 +82,7 @@ class _PageNumListState extends ConsumerState<PageNumList> {
           }
           ref.read(qnaPageNumProvider.notifier).update(index);
           ref.refresh(widget.provider(page));
+          widget.scroller.jumpTo(0);
         },
         child: Text(
           '$index',

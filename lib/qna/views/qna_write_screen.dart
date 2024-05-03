@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minip/common/boards/widgets/back_dialog.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_write_model.dart';
+import 'package:minip/home/providers/recent_provider.dart';
 import 'package:minip/qna/provider/qna_board_provider.dart';
 import 'package:minip/qna/provider/qna_list_provider.dart';
 import 'package:minip/qna/views/qna_read_screen.dart';
@@ -29,7 +31,12 @@ class QnaWriteScreen extends ConsumerWidget {
   String title = '', content = '';
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isLoading = false;
     return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!isLoading) BackAlertDialog.show(context);
+      },
       child: DefaultLayout(
         title: '글 작성',
         actions: [
@@ -38,7 +45,9 @@ class QnaWriteScreen extends ConsumerWidget {
             child: GestureDetector(
               onTap: () async {
                 // 작성
-                writedown(context, ref);
+                isLoading = true;
+                await writedown(context, ref);
+                isLoading = false;
               },
               child: const Icon(
                 Icons.edit_document,
@@ -73,7 +82,7 @@ class QnaWriteScreen extends ConsumerWidget {
     );
   }
 
-  void writedown(BuildContext context, WidgetRef ref) async {
+  Future<void> writedown(BuildContext context, WidgetRef ref) async {
     if (title.length < 4) {
       ToastMessage.showToast(context, 'error', '제목은 4글자 이상 입력해야해요');
       titleFocus.requestFocus();
@@ -84,18 +93,22 @@ class QnaWriteScreen extends ConsumerWidget {
       contentFocus.requestFocus();
       return;
     }
-    Loading.showLoading(context);
+    Loading.showLoading(context, isRoot: true);
     final result = await ref
         .read(qnaBoardAsyncProvider.notifier)
         .writedown(title, content);
     if (context.mounted) {
-      context.pop();
+      while (context.canPop()) {
+        context.pop();
+      }
     }
     if (result is FreeWriteModel) {
       if (context.mounted) {
         ToastMessage.showToast(context, 'success', '글을 작성했어요');
+        ref.refresh(freeRecentListAsyncProvider);
+        ref.refresh(qnaRecentListAsyncProvider);
         ref.refresh(qnaListAsyncProvider(1));
-        context.pushReplacementNamed(
+        context.goNamed(
           QnaReadScreen.routeName,
           pathParameters: {
             'no': result.data.no.toString(),

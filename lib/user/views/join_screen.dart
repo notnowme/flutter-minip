@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minip/common/boards/widgets/back_dialog.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/hooks/validation.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/widgets/custom_text_formField.dart';
+import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/user/models/join_data_model.dart';
 import 'package:minip/user/provider/join_provider.dart';
@@ -32,42 +34,50 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
 
   FocusNode idFocus = FocusNode(), nickFocus = FocusNode();
 
+  bool isModified = false;
+
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      title: '회원 가입',
-      child: SingleChildScrollView(
-        // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: SafeArea(
-          top: true,
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-            ),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 40,
-                ),
-                _renderIdTextField(),
-                const SizedBox(
-                  height: 20,
-                ),
-                _renderNickTextField(),
-                const SizedBox(
-                  height: 20,
-                ),
-                _renderPasswordTextField(),
-                const SizedBox(
-                  height: 20,
-                ),
-                _renderPasswordCheckTextField(),
-                const SizedBox(
-                  height: 40,
-                ),
-                _renderButton(),
-              ],
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!isModified) BackAlertDialog.show(context);
+      },
+      child: DefaultLayout(
+        title: '회원 가입',
+        child: SingleChildScrollView(
+          // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: SafeArea(
+            top: true,
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  _renderIdTextField(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  _renderNickTextField(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  _renderPasswordTextField(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  _renderPasswordCheckTextField(),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  _renderButton(),
+                ],
+              ),
             ),
           ),
         ),
@@ -352,24 +362,6 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
   Widget _renderButton() {
     bool isAllValid = idChecked && nickChecked && isPwValid && isPwChkValid;
 
-    void signUp() async {
-      JoinDataModel user = JoinDataModel(
-        id: id,
-        nick: nick,
-        password: password,
-      );
-      final result = await ref.read(joinAsyncProvider.notifier).join(user);
-      if (result['ok']) {
-        if (mounted) {
-          ToastMessage.showToast(context, 'success', '가입에 성공했어요');
-          context.goNamed(LoginScreen.routeName);
-        }
-      } else {
-        final code = result['statusCode'];
-        print(code);
-      }
-    }
-
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -398,5 +390,28 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
         ),
       ),
     );
+  }
+
+  void signUp() async {
+    JoinDataModel user = JoinDataModel(
+      id: id,
+      nick: nick,
+      password: password,
+    );
+    Loading.showLoading(context);
+    final result = await ref.read(joinAsyncProvider.notifier).join(user);
+    if (mounted) {
+      context.pop();
+    }
+    if (result['ok']) {
+      if (mounted) {
+        isModified = true;
+        ToastMessage.showToast(context, 'success', '가입에 성공했어요');
+        context.goNamed(LoginScreen.routeName);
+      }
+    } else {
+      final code = result['statusCode'];
+      print(code);
+    }
   }
 }

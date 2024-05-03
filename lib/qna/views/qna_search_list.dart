@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/boards/widgets/content_card.dart';
 import 'package:minip/common/boards/widgets/result_text.dart';
+import 'package:minip/common/boards/widgets/search_result_text.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/const/data.dart';
 import 'package:minip/common/hooks/validation.dart';
@@ -109,11 +110,21 @@ class _QnaSearchListScreenState extends ConsumerState<QnaSearchListScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      ResultText(allCounts: data.allCounts, page: page),
+                      SearchResultText(
+                        allCounts: data.allCounts,
+                        page: form.page,
+                      ),
                       const SizedBox(
                         height: 20,
                       ),
                       renderPageNumList(totalPage),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      renderPageButton(),
+                      const SizedBox(
+                        height: 20,
+                      ),
                     ],
                   );
                 } else {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/widgets/boxBorderLayout.dart';
 import 'package:minip/home/models/board_recent_model.dart';
@@ -10,10 +12,14 @@ class RecentCard extends ConsumerWidget {
     super.key,
     required this.content,
     required this.boardTitle,
+    required this.routeIndexName,
+    required this.routeReadName,
   });
 
   final List<RecentBoardDataModel> content;
   final String boardTitle;
+  final String routeIndexName;
+  final String routeReadName;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,10 +41,15 @@ class RecentCard extends ConsumerWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const Text(
-                  '더 보기',
-                  style: TextStyle(
-                    color: primaryColor,
+                GestureDetector(
+                  onTap: () {
+                    context.pushNamed(routeIndexName);
+                  },
+                  child: const Text(
+                    '더 보기',
+                    style: TextStyle(
+                      color: secondaryColor,
+                    ),
                   ),
                 ),
               ],
@@ -59,6 +70,7 @@ class RecentCard extends ConsumerWidget {
                 var data = content[index];
                 return RecentContent(
                   content: data,
+                  routeReadName: routeReadName,
                 );
               },
             ),

@@ -10,6 +10,7 @@ import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_cmt_write_model.dart';
 import 'package:minip/qna/provider/qna_board_provider.dart';
 import 'package:minip/qna/provider/qna_one_provider.dart';
+import 'package:minip/qna/views/qna_read_screen.dart';
 
 class QnaCommentWriteScreen extends ConsumerWidget {
   const QnaCommentWriteScreen({
@@ -25,12 +26,13 @@ class QnaCommentWriteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final boardNo = int.parse(no);
+    bool isLoading = false;
 
     TextEditingController contentController = TextEditingController();
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
-        BackAlertDialog.show(context);
+        if (!isLoading) BackAlertDialog.show(context);
       },
       child: DefaultLayout(
         title: '댓글 작성',
@@ -41,12 +43,14 @@ class QnaCommentWriteScreen extends ConsumerWidget {
             ),
             child: GestureDetector(
               onTap: () async {
-                _writedownComment(
+                isLoading = true;
+                await _writedownComment(
                   context,
                   contentController.text,
                   ref,
                   boardNo,
                 );
+                isLoading = false;
               },
               child: const Icon(
                 Icons.edit_document,
@@ -62,7 +66,7 @@ class QnaCommentWriteScreen extends ConsumerWidget {
     );
   }
 
-  void _writedownComment(
+  Future<void> _writedownComment(
     BuildContext context,
     String text,
     WidgetRef ref,
@@ -72,19 +76,22 @@ class QnaCommentWriteScreen extends ConsumerWidget {
       ToastMessage.showToast(context, 'error', '내용은 4글자 이상 입력해야해요');
       return;
     }
-    Loading.showLoading(context);
+    Loading.showLoading(context, isRoot: true);
     final result = await ref
         .read(qnaBoardAsyncProvider.notifier)
         .writeComment(boardNo, text);
     if (context.mounted) {
-      context.pop();
+      while (context.canPop()) {
+        context.pop();
+      }
     }
     if (result is FreeCommentWriteModel) {
       if (context.mounted) {
         ToastMessage.showToast(context, 'success', '댓글을 작성했어요');
         ref.refresh(
             qnaOneDisposeAsyncProvider(result.data.board_no.toString()));
-        context.pop();
+        context.goNamed(QnaReadScreen.routeName,
+            pathParameters: {'no': result.data.board_no.toString()});
       }
     } else {
       final code = result['statusCode'];

@@ -44,63 +44,66 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       ),
     );
     return TextFormField(
-        controller: widget.controller,
-        focusNode: widget.focusNode,
-        cursorColor: primaryColor,
-        obscureText: showPassword,
-        autofocus: widget.isAutoFocus,
-        onChanged: widget.onChanged,
-        validator: widget.validator,
-        keyboardType: widget.textType,
-        autovalidateMode: AutovalidateMode.always,
-        style: const TextStyle(
-          decorationThickness: 0,
+      controller: widget.controller,
+      focusNode: widget.focusNode,
+      cursorColor: primaryColor,
+      obscureText: showPassword,
+      autofocus: widget.isAutoFocus,
+      onChanged: widget.onChanged,
+      validator: widget.validator,
+      keyboardType: widget.textType,
+      autovalidateMode: AutovalidateMode.always,
+      style: const TextStyle(
+        decorationThickness: 0,
+      ),
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(10),
+        helperText: ' ',
+        hintText: widget.hintText,
+        errorText: widget.errText,
+        hintStyle: const TextStyle(
+          color: secondaryColor,
+          fontSize: 14,
         ),
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(10),
-          helperText: ' ',
-          hintText: widget.hintText,
-          errorText: widget.errText,
-          hintStyle: const TextStyle(
-            color: secondaryColor,
-            fontSize: 14,
+        fillColor: inputBgColor,
+        filled: true,
+        border: baseBorder,
+        enabledBorder: baseBorder,
+        focusedBorder: baseBorder.copyWith(
+          borderSide: baseBorder.borderSide.copyWith(
+            color: primaryColor,
           ),
-          fillColor: inputBgColor,
-          filled: true,
-          border: baseBorder,
-          enabledBorder: baseBorder,
-          focusedBorder: baseBorder.copyWith(
-            borderSide: baseBorder.borderSide.copyWith(
-              color: primaryColor,
-            ),
+        ),
+        focusedErrorBorder: baseBorder.copyWith(
+          borderSide: baseBorder.borderSide.copyWith(
+            color: errorColor,
+            width: 1,
           ),
-          focusedErrorBorder: baseBorder.copyWith(
-            borderSide: baseBorder.borderSide.copyWith(
-              color: errorColor,
-              width: 1,
-            ),
+        ),
+        errorBorder: baseBorder.copyWith(
+          borderSide: baseBorder.borderSide.copyWith(
+            color: errorColor,
+            width: 1,
           ),
-          errorBorder: baseBorder.copyWith(
-            borderSide: baseBorder.borderSide.copyWith(
-              color: errorColor,
-              width: 1,
-            ),
-          ),
-          suffixIcon: widget.isPassword
-              ? IconButton(
-                  onPressed: () {
-                    setState(() {
+        ),
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                onPressed: () {
+                  setState(
+                    () {
                       showPassword = !showPassword;
-                    });
-                  },
-                  icon: Icon(
-                    showPassword
-                        ? Icons.visibility_rounded
-                        : Icons.visibility_off_rounded,
-                    color: Colors.grey[350],
-                  ),
-                )
-              : null,
-        ));
+                    },
+                  );
+                },
+                icon: Icon(
+                  showPassword
+                      ? Icons.visibility_rounded
+                      : Icons.visibility_off_rounded,
+                  color: Colors.grey[350],
+                ),
+              )
+            : null,
+      ),
+    );
   }
 }

@@ -40,35 +40,32 @@ class BoardContent extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.all(
-                20,
+              padding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 20,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Text(
+                    isModified ? '[수정됨]' : '',
+                    style: const TextStyle(
+                      color: textColor,
+                      fontSize: 10,
+                    ),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            content.title,
-                            style: const TextStyle(
-                              color: textColor,
-                              fontSize: 20,
-                            ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 110,
+                        child: Text(
+                          content.title,
+                          style: const TextStyle(
+                            color: textColor,
+                            fontSize: 20,
                           ),
-                          const SizedBox(
-                            width: 4,
-                          ),
-                          Text(
-                            isModified ? '[수정됨]' : '',
-                            style: const TextStyle(
-                              color: textColor,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                       _renderMenuButton(data?.id, context, ref),
                     ],

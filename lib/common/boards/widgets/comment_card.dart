@@ -150,7 +150,7 @@ class CommentCard extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  '게시글 삭제',
+                  '댓글 삭제',
                   style: TextStyle(
                     color: textColor,
                     fontSize: 20,

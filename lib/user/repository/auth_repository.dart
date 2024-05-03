@@ -30,6 +30,13 @@ abstract class AuthRepository {
   @POST('/check/nick')
   Future<AuthModel> checkNick({@Body() required Map<String, dynamic> data});
 
+  @POST('/check/password')
+  Future<AuthModel> checkPassword({@Body() required Map<String, dynamic> data});
+
+  @POST('/local/withdraw')
+  @Headers({'accessToken': 'true'})
+  Future<AuthModel> withdraw();
+
   @POST('/local/join')
   Future<AuthModel> join({@Body() required Map<String, dynamic> data});
 

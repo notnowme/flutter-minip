@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class Loading {
-  static void showLoading(BuildContext context) {
+  static void showLoading(BuildContext context, {bool isRoot = false}) {
     showDialog(
-      useRootNavigator: false,
+      barrierDismissible: false,
+      useRootNavigator: isRoot,
       context: context,
       builder: (_) {
-        return const Center(
-          child: CircularProgressIndicator(),
+        return const AlertDialog(
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          content: Center(
+            child: CircularProgressIndicator(),
+          ),
         );
       },
     );

@@ -7,7 +7,6 @@ import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/home/views/home_screen.dart';
 import 'package:minip/user/models/auth_model.dart';
 import 'package:minip/user/provider/join_provider.dart';
-import 'package:minip/user/views/login_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -65,7 +64,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (accessToken == null) {
       if (mounted) {
-        context.goNamed(LoginScreen.routeName);
+        context.goNamed(HomeScreen.routeName);
       }
     } else {
       ref.read(joinAsyncProvider.notifier).checkToken();
@@ -80,7 +79,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           }
         } else {
           if (mounted) {
-            context.goNamed(LoginScreen.routeName);
+            context.goNamed(HomeScreen.routeName);
           }
         }
       }

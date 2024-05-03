@@ -71,6 +71,49 @@ class JoinAsyncNotifier extends AsyncNotifier<AuthModel> {
     return {'ok': true};
   }
 
+  checkPassword(String id, String password) async {
+    final data = {
+      'id': id,
+      'password': password,
+    };
+    state = const AsyncValue.loading();
+
+    state = await AsyncValue.guard(() async {
+      resultData = await repo.checkPassword(data: data);
+      return resultData;
+    });
+
+    if (state.hasError) {
+      DioException error = state.error as DioException;
+      return {
+        'ok': false,
+        'statusCode': error.response?.statusCode,
+      };
+    }
+
+    return resultData;
+  }
+
+  withdraw() async {
+    state = const AsyncValue.loading();
+
+    state = await AsyncValue.guard(() async {
+      resultData = await repo.withdraw();
+      return resultData;
+    });
+
+    if (state.hasError) {
+      DioException error = state.error as DioException;
+
+      return {
+        'ok': false,
+        'statusCode': error.response?.statusCode,
+      };
+    }
+
+    return resultData;
+  }
+
   join(JoinDataModel user) async {
     state = const AsyncValue.loading();
 

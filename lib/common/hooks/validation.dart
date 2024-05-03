@@ -42,7 +42,7 @@ class Validation {
       return '입력할 수 없는 문자가 있어요';
     }
     if (pw.length < 8) {
-      return '8글자 이상 입력해야해요';
+      return '비밀번호가 너무 짧아요';
     }
     return null;
   }
@@ -52,7 +52,7 @@ class Validation {
       return '반드시 입력해야해요';
     }
     if (pwChk.length < 8) {
-      return '8글자 이상 입력해야해요';
+      return '비밀번호가 너무 짧아요';
     }
     if (pwChk.compareTo(pw) != 0) {
       return '비밀번호가 일치하지 않아요';

@@ -35,6 +35,7 @@ class ContentCard extends ConsumerWidget {
           horizontal: 20,
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _renderTitleAndComment(context),
             const SizedBox(
@@ -48,35 +49,42 @@ class ContentCard extends ConsumerWidget {
   }
 
   Widget _renderTitleAndComment(BuildContext context) {
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: () {
-            context.pushNamed(
-              routeName,
-              pathParameters: {'no': '${data.no}'},
-            );
-          },
-          child: Text(
-            data.title,
-            style: const TextStyle(
-              color: textColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+    final int commentsCount = data.comments.length;
+    return SizedBox(
+      width: 220,
+      child: Row(
+        children: [
+          Flexible(
+            child: GestureDetector(
+              onTap: () {
+                context.pushNamed(
+                  routeName,
+                  pathParameters: {'no': '${data.no}'},
+                );
+              },
+              child: Text(
+                data.title,
+                style: const TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                  color: textColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ),
-        ),
-        const SizedBox(
-          width: 4,
-        ),
-        Text(
-          '[${data.comments.length}]',
-          style: const TextStyle(
-            color: primaryColor,
-            fontSize: 12,
+          const SizedBox(
+            width: 4,
           ),
-        ),
-      ],
+          Text(
+            commentsCount > 0 ? '[$commentsCount]' : '',
+            style: const TextStyle(
+              color: primaryColor,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

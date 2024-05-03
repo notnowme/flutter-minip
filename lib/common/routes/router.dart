@@ -22,7 +22,7 @@ import 'package:minip/user/views/join_screen.dart';
 import 'package:minip/user/views/login_screen.dart';
 import 'package:minip/user/views/profile_screen.dart';
 
-final GlobalKey<NavigatorState> _rootNavigatorKey =
+final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey(debugLabel: 'root');
 
 final GlobalKey<NavigatorState> _homeNavigatorKey =
@@ -40,7 +40,7 @@ final GlobalKey<NavigatorState> _profileNavigatorKey =
 final routesProvider = Provider(
   (ref) {
     return GoRouter(
-      navigatorKey: _rootNavigatorKey,
+      navigatorKey: rootNavigatorKey,
       initialLocation: '/splash',
       routes: [
         GoRoute(
@@ -56,8 +56,10 @@ final routesProvider = Provider(
           path: LoginScreen.routePath,
           name: LoginScreen.routeName,
           pageBuilder: (context, state) {
-            return const NoTransitionPage(
-              child: LoginScreen(),
+            return NoTransitionPage(
+              child: LoginScreen(
+                extra: state.extra,
+              ),
             );
           },
         ),
@@ -71,7 +73,7 @@ final routesProvider = Provider(
           },
         ),
         StatefulShellRoute.indexedStack(
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: rootNavigatorKey,
           builder: (context, state, navigationShell) {
             return ScaffoldWithNav(navigationShell: navigationShell);
           },
@@ -121,7 +123,7 @@ StatefulShellBranch _freeBoardBranch() {
             path: FreeWriteScreen.routePath,
             name: FreeWriteScreen.routeName,
             pageBuilder: (context, state) {
-              return const NoTransitionPage(
+              return NoTransitionPage(
                 child: FreeWriteScreen(),
               );
             },

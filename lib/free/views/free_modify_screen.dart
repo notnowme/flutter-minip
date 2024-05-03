@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minip/common/boards/widgets/back_dialog.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
-import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_modify_model.dart';
@@ -12,10 +12,9 @@ import 'package:minip/free/provider/free_board_provider.dart';
 import 'package:minip/free/provider/free_list_provider.dart';
 import 'package:minip/free/provider/free_one_provider.dart';
 import 'package:minip/free/views/free_read_screen.dart';
-import 'package:minip/user/views/login_screen.dart';
 
-class FreeModifyScreen extends ConsumerStatefulWidget {
-  const FreeModifyScreen({
+class FreeModifyScreen extends ConsumerWidget {
+  FreeModifyScreen({
     super.key,
     required this.no,
     this.extra,
@@ -27,39 +26,30 @@ class FreeModifyScreen extends ConsumerStatefulWidget {
   final String no;
   final Object? extra;
 
-  static const baseBorder = OutlineInputBorder(
+  final baseBorder = const OutlineInputBorder(
     borderSide: BorderSide(
       color: inputBorderColodr,
       width: 1,
     ),
   );
 
-  @override
-  ConsumerState<FreeModifyScreen> createState() => _FreeModifyScreenState();
-}
+  bool isModified = false;
+  bool isLoading = false;
 
-class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
-  FocusNode titleFocus = FocusNode(), contentFocus = FocusNode();
   final TextEditingController titleController = TextEditingController(),
       contentController = TextEditingController();
-
-  bool isModified = false;
+  FocusNode titleFocus = FocusNode(), contentFocus = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-    final prevContent = widget.extra as FreeOneDataModel;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prevContent = extra as FreeOneDataModel;
     titleController.text = prevContent.title;
     contentController.text = prevContent.content;
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    final prevContent = widget.extra as FreeOneDataModel;
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
-        if (!isModified) _showBackDialog(context);
+      onPopInvoked: (didPop) {
+        if (!isModified && !isLoading) BackAlertDialog.show(context);
       },
       child: DefaultLayout(
         title: '글 수정',
@@ -68,7 +58,13 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () async {
-                await modify(prevContent.no.toString());
+                isLoading = true;
+                await modify(
+                  context,
+                  ref,
+                  prevContent.no.toString(),
+                );
+                isLoading = false;
               },
               child: const Icon(
                 Icons.edit_document,
@@ -103,9 +99,10 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
     );
   }
 
-  Future<void> modify(String no) async {
+  Future<void> modify(BuildContext context, WidgetRef ref, String no) async {
     final title = titleController.text;
     final content = contentController.text;
+
     if (title.length < 4) {
       ToastMessage.showToast(context, 'error', '제목은 4글자 이상 입력해야해요');
       titleFocus.requestFocus();
@@ -116,110 +113,29 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
       contentFocus.requestFocus();
       return;
     }
-    Loading.showLoading(context);
+    Loading.showLoading(context, isRoot: true);
     final result = await ref
         .read(freeBoardAsyncProvider.notifier)
         .modify(title, content, no);
-    if (mounted) {
-      context.pop();
+    if (context.mounted) {
+      while (context.canPop()) {
+        context.pop();
+      }
     }
     if (result is FreeModifyModel) {
-      if (mounted) {
+      if (context.mounted) {
         isModified = true;
         ToastMessage.showToast(context, 'success', '글을 수정했어요');
         ref.refresh(freeListAsyncProvider(1));
         ref.refresh(freeOneDisposeAsyncProvider(result.data.no.toString()));
-        context.goNamed(FreeReadScreen.routeName, pathParameters: {
-          'no': result.data.no.toString(),
-        });
-      }
-    } else {
-      final code = result['statusCode'];
-      switch (code) {
-        case 401:
-          final storage = ref.read(secureStorageProvider);
-          await storage.deleteAll();
-          if (mounted) {
-            context.goNamed(LoginScreen.routeName);
-            ToastMessage.showToast(context, 'error', '다시 로그인해 주세요');
-          }
-          break;
+        context.goNamed(
+          FreeReadScreen.routeName,
+          pathParameters: {
+            'no': result.data.no.toString(),
+          },
+        );
       }
     }
-  }
-
-  void _showBackDialog(BuildContext context) {
-    showDialog(
-      useRootNavigator: false,
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          backgroundColor: Colors.white.withOpacity(0.9),
-          surfaceTintColor: Colors.white.withOpacity(0.9),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          contentPadding: const EdgeInsets.all(15),
-          content: Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 1,
-                color: inputBorderColodr,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  '작성한 정보는 저장되지 않아요',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(
-                  height: 22,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        context.pop();
-                      },
-                      child: const Text(
-                        '취소',
-                        style: TextStyle(
-                          color: secondaryColor,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 40,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        context.pop();
-                        context.pop();
-                      },
-                      child: const Text(
-                        '돌아가기',
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget _renderTitleTextField() {
@@ -244,10 +160,10 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
           contentPadding: const EdgeInsets.all(10),
           fillColor: inputBgColor,
           filled: true,
-          border: FreeModifyScreen.baseBorder,
-          enabledBorder: FreeModifyScreen.baseBorder,
-          focusedBorder: FreeModifyScreen.baseBorder.copyWith(
-            borderSide: FreeModifyScreen.baseBorder.borderSide.copyWith(
+          border: baseBorder,
+          enabledBorder: baseBorder,
+          focusedBorder: baseBorder.copyWith(
+            borderSide: baseBorder.borderSide.copyWith(
               color: primaryColor,
             ),
           ),
@@ -281,10 +197,10 @@ class _FreeModifyScreenState extends ConsumerState<FreeModifyScreen> {
           contentPadding: const EdgeInsets.all(10),
           fillColor: inputBgColor,
           filled: true,
-          border: FreeModifyScreen.baseBorder,
-          enabledBorder: FreeModifyScreen.baseBorder,
-          focusedBorder: FreeModifyScreen.baseBorder.copyWith(
-            borderSide: FreeModifyScreen.baseBorder.borderSide.copyWith(
+          border: baseBorder,
+          enabledBorder: baseBorder,
+          focusedBorder: baseBorder.copyWith(
+            borderSide: baseBorder.borderSide.copyWith(
               color: primaryColor,
             ),
           ),

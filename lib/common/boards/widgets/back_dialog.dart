@@ -5,9 +5,9 @@ import 'package:minip/common/const/colors.dart';
 class BackAlertDialog {
   static void show(BuildContext context) {
     showDialog(
-      useRootNavigator: false,
+      useRootNavigator: true,
       context: context,
-      builder: (_) {
+      builder: (context) {
         return AlertDialog(
           backgroundColor: Colors.white.withOpacity(0.9),
           surfaceTintColor: Colors.white.withOpacity(0.9),
@@ -41,7 +41,7 @@ class BackAlertDialog {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        context.pop();
+                        Navigator.of(context, rootNavigator: true).pop();
                       },
                       child: const Text(
                         '취소',
@@ -56,8 +56,9 @@ class BackAlertDialog {
                     ),
                     GestureDetector(
                       onTap: () {
+                        Navigator.of(context, rootNavigator: true).pop();
                         context.pop();
-                        context.pop();
+                        // context.pop();
                       },
                       child: const Text(
                         '돌아가기',

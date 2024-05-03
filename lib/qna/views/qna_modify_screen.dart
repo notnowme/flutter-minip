@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minip/common/boards/widgets/back_dialog.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/layouts/default_layout.dart';
 import 'package:minip/common/widgets/loading.dart';
@@ -31,11 +32,12 @@ class QnaModifyScreen extends ConsumerWidget {
       width: 1,
     ),
   );
-  bool isModified = false;
 
   final TextEditingController titleController = TextEditingController(),
       contentController = TextEditingController();
   FocusNode titleFocus = FocusNode(), contentFocus = FocusNode();
+  bool isModified = false;
+  bool isLoading = false;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final prevContent = extra as FreeOneDataModel;
@@ -43,8 +45,8 @@ class QnaModifyScreen extends ConsumerWidget {
     contentController.text = prevContent.content;
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
-        if (!isModified) _showBackDialog(context);
+      onPopInvoked: (didPop) {
+        if (!isModified && !isLoading) BackAlertDialog.show(context);
       },
       child: DefaultLayout(
         title: '글 수정',
@@ -53,11 +55,13 @@ class QnaModifyScreen extends ConsumerWidget {
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () async {
+                isLoading = true;
                 await modify(
                   context,
                   ref,
                   prevContent.no.toString(),
                 );
+                isLoading = false;
               },
               child: const Icon(
                 Icons.edit_document,
@@ -92,80 +96,6 @@ class QnaModifyScreen extends ConsumerWidget {
     );
   }
 
-  void _showBackDialog(BuildContext context) {
-    showDialog(
-      useRootNavigator: false,
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          backgroundColor: Colors.white.withOpacity(0.9),
-          surfaceTintColor: Colors.white.withOpacity(0.9),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          contentPadding: const EdgeInsets.all(15),
-          content: Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 1,
-                color: inputBorderColodr,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  '작성한 정보는 저장되지 않아요',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(
-                  height: 22,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        context.pop();
-                      },
-                      child: const Text(
-                        '취소',
-                        style: TextStyle(
-                          color: secondaryColor,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 40,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        context.pop();
-                        context.pop();
-                      },
-                      child: const Text(
-                        '돌아가기',
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Future<void> modify(BuildContext context, WidgetRef ref, String no) async {
     final title = titleController.text;
     final content = contentController.text;
@@ -180,12 +110,14 @@ class QnaModifyScreen extends ConsumerWidget {
       contentFocus.requestFocus();
       return;
     }
-    Loading.showLoading(context);
+    Loading.showLoading(context, isRoot: true);
     final result = await ref
         .read(qnaBoardAsyncProvider.notifier)
         .modify(title, content, no);
     if (context.mounted) {
-      context.pop();
+      while (context.canPop()) {
+        context.pop();
+      }
     }
     if (result is FreeModifyModel) {
       if (context.mounted) {

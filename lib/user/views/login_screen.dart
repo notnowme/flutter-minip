@@ -13,13 +13,18 @@ import 'package:minip/home/views/home_screen.dart';
 import 'package:minip/user/models/login_req_model.dart';
 import 'package:minip/user/models/login_res_model.dart';
 import 'package:minip/user/provider/login_provider.dart';
+import 'package:minip/user/provider/user_data_provider.dart';
 import 'package:minip/user/views/join_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({
+    super.key,
+    this.extra,
+  });
 
   static const String routeName = 'login';
   static const String routePath = '/login';
+  final Object? extra;
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -38,57 +43,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 로그인 화면 넘어오기 전 주소
+    // null이라면 홈 화면으로 보내기.
+    final prevPath = widget.extra as String?;
+
     return DefaultLayout(
       title: '로그인',
       child: SingleChildScrollView(
-        // 드래그 시 text field focus 벗어남.
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: SafeArea(
-          top: true,
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-            ),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 40,
-                ),
-                Column(
-                  children: [
-                    Form(
-                      key: formKey,
-                      onChanged: () {
-                        if (formKey.currentState!.validate()) {
-                          isValidated = true;
-                        } else {
-                          isValidated = false;
-                        }
-                        setState(() {});
-                      },
-                      child: Column(
-                        children: [
-                          _renderIdTextField(),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          _renderPasswordTextField(),
-                        ],
-                      ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+          ),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 40,
+              ),
+              Column(
+                children: [
+                  Form(
+                    key: formKey,
+                    onChanged: () {
+                      if (formKey.currentState!.validate()) {
+                        isValidated = true;
+                      } else {
+                        isValidated = false;
+                      }
+                      setState(() {});
+                    },
+                    child: Column(
+                      children: [
+                        _renderIdTextField(),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        _renderPasswordTextField(),
+                      ],
                     ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    _renderButton(),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    _renderJoinText(),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  _renderButton(prevPath),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  _renderJoinText(),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -112,6 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         CustomTextFormField(
           focusNode: idFocus,
+          isAutoFocus: true,
           hintText: '아이디를 입력해 주세요',
           validator: (value) {
             return Validation.validateId(value);
@@ -155,7 +160,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _renderButton() {
+  Widget _renderButton(String? prevPath) {
     void login() async {
       LoginReqModel user = LoginReqModel(id: id, password: password);
       Loading.showLoading(context);
@@ -173,10 +178,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           storage.write(key: ACCESS_KEY, value: result.data.token),
         ]);
 
-        // 이전 페이지 기억해서 보내야 될 듯.
+        ref.refresh(userDataAsyncNotifier);
+
         if (mounted) {
           ToastMessage.showToast(context, 'success', '로그인 성공했어요');
-          context.goNamed(HomeScreen.routeName);
+          if (prevPath == null) {
+            context.goNamed(HomeScreen.routeName);
+            return;
+          } else {
+            context.goNamed(prevPath);
+            return;
+          }
         }
       } else {
         final code = result['statusCode'];

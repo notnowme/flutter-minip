@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/boards/widgets/content_card.dart';
+import 'package:minip/common/boards/widgets/search_result_text.dart';
 import 'package:minip/common/const/colors.dart';
 import 'package:minip/common/const/data.dart';
 import 'package:minip/common/hooks/validation.dart';
@@ -48,6 +49,7 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
   @override
   Widget build(BuildContext context) {
     final searchResult = ref.watch(freeSearchListAsyncProvider(form));
+
     return DefaultLayout(
       title: '자유 게시판 검색',
       child: SingleChildScrollView(
@@ -103,22 +105,9 @@ class _FreeSearchListScreenState extends ConsumerState<FreeSearchListScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: 20,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              '검색된 ${data.allCounts}개의 게시글 중 ${form.page}번째 페이지',
-                              style: const TextStyle(
-                                color: secondaryColor,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
+                      SearchResultText(
+                        allCounts: data.allCounts,
+                        page: form.page,
                       ),
                       const SizedBox(
                         height: 20,

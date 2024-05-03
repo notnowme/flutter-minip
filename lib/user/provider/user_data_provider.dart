@@ -8,11 +8,12 @@ import 'package:minip/user/models/user_model.dart';
 
 class UserDataAsyncNotifier extends AutoDisposeAsyncNotifier<UserModel?> {
   late FlutterSecureStorage storage;
+  late UserModel userData;
 
   @override
   FutureOr<UserModel?> build() async {
     storage = ref.read(secureStorageProvider);
-    return getMe();
+    return await getMe();
   }
 
   getMe() async {
@@ -28,21 +29,20 @@ class UserDataAsyncNotifier extends AutoDisposeAsyncNotifier<UserModel?> {
             storage.read(key: ACCESS_KEY),
           ],
         );
-        if (users.isEmpty) {
-          return null;
-        }
-        UserModel user = UserModel(
+        userData = UserModel(
             no: users[0]!,
             id: users[1]!,
             nick: users[2]!,
             accessToken: users[3]!);
-        return user;
+        return userData;
       },
     );
 
     if (state.hasError) {
-      return false;
+      print(state.error);
+      return null;
     }
+    return userData;
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minip/common/boards/widgets/content_render.dart';
 import 'package:minip/common/layouts/default_layout.dart';
+import 'package:minip/common/providers/secure_storage.dart';
 import 'package:minip/common/widgets/loading.dart';
 import 'package:minip/common/widgets/toast.dart';
 import 'package:minip/free/models/free_one_model.dart';
@@ -14,6 +15,7 @@ import 'package:minip/qna/views/qna_cmt_modify.dart';
 import 'package:minip/qna/views/qna_cmt_write.dart';
 import 'package:minip/qna/views/qna_index.dart';
 import 'package:minip/qna/views/qna_modify_screen.dart';
+import 'package:minip/user/provider/user_data_provider.dart';
 
 class QnaReadScreen extends ConsumerWidget {
   const QnaReadScreen({
@@ -72,11 +74,13 @@ class QnaReadScreen extends ConsumerWidget {
   }
 
   void deleteContent(BuildContext context, WidgetRef ref) async {
-    Loading.showLoading(context);
+    Loading.showLoading(context, isRoot: true);
     final result =
         await ref.read(qnaBoardAsyncProvider.notifier).delete(no.toString());
     if (context.mounted) {
-      context.pop();
+      while (context.canPop()) {
+        context.pop();
+      }
     }
     if (result['ok']) {
       if (context.mounted) {
@@ -86,10 +90,13 @@ class QnaReadScreen extends ConsumerWidget {
       }
     } else {
       final code = result['statusCode'];
+      final storage = ref.read(secureStorageProvider);
       switch (code) {
         case 401:
           if (context.mounted) {
             ToastMessage.showToast(context, 'error', '다시 로그인해 주세요');
+            await storage.deleteAll();
+            ref.refresh(userDataAsyncNotifier);
           }
           break;
         case 500:
@@ -103,25 +110,31 @@ class QnaReadScreen extends ConsumerWidget {
 
   void deleteComment(
       BuildContext context, WidgetRef ref, int commentNo, int boardNo) async {
-    Loading.showLoading(context);
+    Loading.showLoading(context, isRoot: true);
     final result = await ref
         .read(qnaBoardAsyncProvider.notifier)
         .deleteComment(commentNo.toString());
     if (context.mounted) {
-      context.pop();
+      while (context.canPop()) {
+        context.pop();
+      }
     }
     if (result['ok']) {
       if (context.mounted) {
         ref.refresh(qnaOneDisposeAsyncProvider(boardNo.toString()));
         ToastMessage.showToast(context, 'success', '삭제했어요');
-        context.pop();
+        context.pushNamed(QnaReadScreen.routeName,
+            pathParameters: {'no': boardNo.toString()});
       }
     } else {
       final code = result['statusCode'];
+      final storage = ref.read(secureStorageProvider);
       switch (code) {
         case 401:
           if (context.mounted) {
             ToastMessage.showToast(context, 'error', '다시 로그인해 주세요');
+            await storage.deleteAll();
+            ref.refresh(userDataAsyncNotifier);
           }
           break;
         case 500:

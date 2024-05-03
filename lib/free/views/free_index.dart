@@ -16,6 +16,8 @@ import 'package:minip/free/provider/free_page_num_provider.dart';
 import 'package:minip/free/views/free_read_screen.dart';
 import 'package:minip/free/views/free_search_list.dart';
 import 'package:minip/free/views/free_write_screen.dart';
+import 'package:minip/user/provider/user_data_provider.dart';
+import 'package:minip/user/views/login_screen.dart';
 
 class FreeIndexScreen extends ConsumerStatefulWidget {
   const FreeIndexScreen({super.key});
@@ -42,6 +44,7 @@ class _FreeIndexScreenState extends ConsumerState<FreeIndexScreen> {
   Widget build(BuildContext context) {
     final page = ref.watch(freePageNumProvider);
     final boardDatas = ref.watch(freeListAsyncProvider(page));
+
     return DefaultLayout(
       title: '자유 게시판',
       actions: [
@@ -72,27 +75,60 @@ class _FreeIndexScreenState extends ConsumerState<FreeIndexScreen> {
           padding: const EdgeInsets.only(
             right: 20,
           ),
-          child: InkWell(
-            onTap: () {
-              context.pushNamed(FreeWriteScreen.routeName);
+          child: ref.watch(userDataAsyncNotifier).when(
+            data: (data) {
+              if (data == null) {
+                return InkWell(
+                  onTap: () {
+                    context.pushNamed(
+                      LoginScreen.routeName,
+                      extra: FreeIndexScreen.routeName,
+                    );
+                  },
+                  splashColor: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(50),
+                  child: const SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: Icon(
+                      Icons.login_rounded,
+                      size: 24,
+                      color: primaryColor,
+                    ),
+                  ),
+                );
+              } else {
+                return InkWell(
+                  onTap: () {
+                    context.pushNamed(FreeWriteScreen.routeName);
+                  },
+                  splashColor: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(50),
+                  child: const SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: Icon(
+                      Icons.create_rounded,
+                      size: 24,
+                      color: primaryColor,
+                    ),
+                  ),
+                );
+              }
             },
-            splashColor: Colors.grey[300],
-            borderRadius: BorderRadius.circular(50),
-            child: const SizedBox(
-              width: 32,
-              height: 32,
-              child: Icon(
-                Icons.create_rounded,
-                size: 24,
-                color: primaryColor,
-              ),
-            ),
+            error: (error, stackTrace) {
+              return null;
+            },
+            loading: () {
+              return null;
+            },
           ),
         ),
       ],
       child: boardDatas.when(
         data: (data) {
           if (data is FreeListModel) {
+            final ScrollController scrollController = ScrollController();
             int totalPage = (data.allCounts / 20).ceil();
 
             pageGroup = (page / PAGE_COUNT).ceil();
@@ -109,48 +145,56 @@ class _FreeIndexScreenState extends ConsumerState<FreeIndexScreen> {
 
             prevPage = firstPage - 1 <= 0 ? 1 : firstPage - 1;
 
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: data.data.length,
-                    separatorBuilder: (context, index) {
-                      return const SizedBox(
-                        height: 0,
-                      );
-                    },
-                    itemBuilder: (context, index) {
-                      var content = data.data[index];
-                      return ContentCard(
-                        data: content,
-                        routeName: FreeReadScreen.routeName,
-                      );
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  ResultText(allCounts: data.allCounts, page: page),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  PageNumList(
-                    provider: freeListAsyncProvider,
-                    totalPage: totalPage,
-                    firstPage: firstPage,
-                    lastPage: lastPage,
-                    page: page,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  PageMoveButton(provider: freeListAsyncProvider),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
+            return RefreshIndicator(
+              onRefresh: () async {
+                ref.refresh(freeListAsyncProvider(1));
+              },
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  children: [
+                    ListView.separated(
+                      // controller: scrollController,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: data.data.length,
+                      separatorBuilder: (context, index) {
+                        return const SizedBox(
+                          height: 0,
+                        );
+                      },
+                      itemBuilder: (context, index) {
+                        var content = data.data[index];
+                        return ContentCard(
+                          data: content,
+                          routeName: FreeReadScreen.routeName,
+                        );
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ResultText(allCounts: data.allCounts, page: page),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    PageNumList(
+                      provider: freeListAsyncProvider,
+                      totalPage: totalPage,
+                      firstPage: firstPage,
+                      lastPage: lastPage,
+                      page: page,
+                      scroller: scrollController,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    PageMoveButton(provider: freeListAsyncProvider),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
               ),
             );
           } else {
