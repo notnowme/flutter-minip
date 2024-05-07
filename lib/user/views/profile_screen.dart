@@ -89,6 +89,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     const SizedBox(
                                       height: 16,
                                     ),
+                                    //_renderAdminButton(ref, context),
                                     _renderLogoutButton(ref, context),
                                   ],
                                 );
@@ -173,6 +174,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  Widget _renderAdminButton(WidgetRef ref, BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          debugPrint('admin...');
+        },
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: inputBgColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          side: const BorderSide(
+            color: thirdColor,
+          ),
+        ),
+        child: const Text(
+          '관리자 등록',
+          style: TextStyle(
+            color: textColor,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _renderLogoutButton(WidgetRef ref, BuildContext context) {
     return SizedBox(
       width: double.infinity,
@@ -181,14 +210,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           _showLogOutDialog();
         },
         style: ElevatedButton.styleFrom(
-            elevation: 0,
-            backgroundColor: inputBgColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
-            ),
-            side: const BorderSide(
-              color: thirdColor,
-            )),
+          elevation: 0,
+          backgroundColor: inputBgColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          side: const BorderSide(
+            color: thirdColor,
+          ),
+        ),
         child: const Text(
           '로그아웃',
           style: TextStyle(

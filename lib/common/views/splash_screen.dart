@@ -71,6 +71,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       // 로그인 된 상태
       if (mounted) {
         final result = await ref.watch(joinAsyncProvider.notifier).checkToken();
+        // if (!result['ok']) {
+        //   final storage = ref.read(secureStorageProvider);
+        //   await storage.deleteAll();
+        // }
         if (result is AuthModel) {
           if (result.message.isEmpty) {
             if (mounted) {
@@ -79,6 +83,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           }
         } else {
           if (mounted) {
+            final storage = ref.read(secureStorageProvider);
+            await storage.deleteAll();
             context.goNamed(HomeScreen.routeName);
           }
         }

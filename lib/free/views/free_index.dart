@@ -147,9 +147,10 @@ class _FreeIndexScreenState extends ConsumerState<FreeIndexScreen> {
 
             return RefreshIndicator(
               onRefresh: () async {
-                ref.refresh(freeListAsyncProvider(1));
+                ref.refresh(freeListAsyncProvider(page));
               },
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 controller: scrollController,
                 child: Column(
                   children: [

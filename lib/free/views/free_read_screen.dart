@@ -96,7 +96,7 @@ class FreeReadScreen extends ConsumerWidget {
           if (context.mounted) {
             ToastMessage.showToast(context, 'error', '다시 로그인해 주세요');
             await storage.deleteAll();
-            ref.refresh(userDataAsyncNotifier);
+            // ref.refresh(userDataAsyncNotifier);
           }
           break;
         case 500:

@@ -2,29 +2,54 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:minip/common/const/colors.dart';
 
+sealed class ItemType {
+  final Icon icon;
+
+  ItemType(this.icon);
+
+  factory ItemType.error() => ErrorType(
+        const Icon(
+          Icons.close_rounded,
+          color: errorColor,
+        ),
+      );
+  factory ItemType.success() => SuccessType(
+        const Icon(
+          Icons.check_rounded,
+          color: successColor,
+        ),
+      );
+  factory ItemType.info() => InfoType(
+        const Icon(
+          Icons.info_outline,
+          color: primaryColor,
+        ),
+      );
+}
+
+class ErrorType extends ItemType {
+  ErrorType(super.icon);
+}
+
+class SuccessType extends ItemType {
+  SuccessType(super.icon);
+}
+
+class InfoType extends ItemType {
+  InfoType(super.icon);
+}
+
 class ToastMessage {
   static void showToast(BuildContext context, String type, String text) {
     late Icon icon;
 
     switch (type) {
       case 'error':
-        icon = const Icon(
-          Icons.close_rounded,
-          color: errorColor,
-        );
-        break;
+        icon = ItemType.error().icon;
       case 'success':
-        icon = const Icon(
-          Icons.check_rounded,
-          color: successColor,
-        );
-        break;
+        icon = ItemType.success().icon;
       case 'info':
-        icon = const Icon(
-          Icons.info_outline,
-          color: primaryColor,
-        );
-        break;
+        icon = ItemType.info().icon;
     }
 
     final fToast = FToast();
