@@ -2,7 +2,6 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minip/common/const/data.dart';
 import 'package:minip/common/providers/dio.dart';
-import 'package:minip/free/models/free_list_model.dart';
 import 'package:minip/home/models/board_recent_model.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';

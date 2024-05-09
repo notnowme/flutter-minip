@@ -411,7 +411,12 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
       }
     } else {
       final code = result['statusCode'];
-      print(code);
+      switch (code) {
+        case 400:
+          if (mounted) {
+            ToastMessage.showToast(context, 'error', '입력하지 않은 내용이 있어요.');
+          }
+      }
     }
   }
 }

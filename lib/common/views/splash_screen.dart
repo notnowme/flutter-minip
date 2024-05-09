@@ -58,7 +58,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   // }
 
   void checkLogin() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 3500));
     final storage = ref.read(secureStorageProvider);
     final accessToken = await storage.read(key: ACCESS_KEY);
 
