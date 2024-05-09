@@ -133,6 +133,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
               Flexible(
                 flex: 1,
                 child: CustomTextFormField(
+                  isAutoFocus: true,
                   focusNode: idFocus,
                   hintText: '아이디를 입력해 주세요',
                   validator: (value) {
